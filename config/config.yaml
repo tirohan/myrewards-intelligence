@@ -1,0 +1,65 @@
+# MyRewards Intelligence configuration
+# All paths are relative to the project root unless absolute.
+
+project:
+  name: "MyRewards Intelligence"
+  description: "Predictive scoring, claims validation, and ROI intelligence"
+
+paths:
+  # Input data (gitignored — copy from reference repo or configure reference path)
+  data_dir: data
+  analytical_dataset: data/analytical_dataset.csv
+
+  # Reference repo path (alternative to copying data locally)
+  reference_repo: /Volumes/research/mhealth/InComm/Milestones/InComm_Milestone2
+  reference_dataset: outputs/csv/analytical_dataset.csv
+
+  # Output paths
+  models_dir: models
+  reports_dir: reports
+  logs_dir: logs
+
+mode:
+  # auto | connected | offline
+  # auto: try to connect, fall back to offline
+  # connected: require database connection
+  # offline: never attempt database connection
+  requested: auto
+
+layer_prefixes:
+  stg_: Staging
+  can_: Canonical
+  der_: Derived
+  ref_: Reference
+  cam_: Campaign
+  sim_: Simulation
+
+milestone5:
+  # Model training settings
+  test_size: 0.2
+  random_state: 42
+
+  # LightGBM hyperparameters
+  lgbm_params:
+    objective: binary
+    metric: auc
+    boosting_type: gbdt
+    num_leaves: 31
+    learning_rate: 0.05
+    feature_fraction: 0.9
+    bagging_fraction: 0.8
+    bagging_freq: 5
+    verbose: -1
+    n_estimators: 200
+
+  # Operating threshold for precision/recall reporting
+  operating_threshold: 0.5
+
+  # Score tiers for der_MemberImpactScores
+  score_tiers:
+    high: 0.7
+    medium: 0.4
+    # below medium threshold = Low
+
+logging:
+  level: INFO
