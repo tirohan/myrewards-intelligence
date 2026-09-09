@@ -16,6 +16,7 @@ Runs the complete pipeline:
 
 from __future__ import annotations
 
+import json
 import subprocess
 import sys
 from datetime import UTC, datetime
@@ -33,13 +34,18 @@ from ..milestone5_member_impact_scoring.derived_layer import (
     generate_member_prioritization,
     generate_scored_output,
 )
+from ..milestone5_member_impact_scoring.diagnostics import run_followup_diagnostics
 from ..milestone5_member_impact_scoring.evaluate import (
     evaluate_model,
     generate_subgroup_metrics,
 )
 from ..milestone5_member_impact_scoring.explain import generate_shap_explanations
 from ..milestone5_member_impact_scoring.features import split_by_label_source
-from ..milestone5_member_impact_scoring.reports import write_all_reports
+from ..milestone5_member_impact_scoring.reports import (
+    build_followup_report,
+    write_all_reports,
+    write_followup_markdown,
+)
 from ..milestone5_member_impact_scoring.train import (
     save_model,
     save_model_metadata,
@@ -218,6 +224,25 @@ def main() -> int:
         )
         results["reports_written"] = reports_written
         logger.info("Wrote %d reports", len(reports_written))
+
+        logger.info("Step 7b: Follow-up analyses for InComm review questions...")
+        diagnostics = run_followup_diagnostics(df_model_a, settings)
+        reports_dir = resolve_path(settings.paths.reports_dir)
+        followup_doc = build_followup_report(diagnostics)
+        followup_docx = reports_dir / "Milestone 5 Follow-up Analyses.docx"
+        followup_doc.save(followup_docx)
+        followup_md = write_followup_markdown(
+            diagnostics, reports_dir / "Milestone5_Followup_Analyses.md"
+        )
+        followup_json = reports_dir / "milestone5_followup_diagnostics.json"
+        with open(followup_json, "w", encoding="utf-8") as f:
+            json.dump(diagnostics, f, indent=2, default=str)
+        results["reports_written"] = reports_written + [
+            str(followup_docx),
+            followup_md,
+            str(followup_json),
+        ]
+        logger.info("Wrote follow-up report: %s", followup_docx)
 
         logger.info("Step 8: Running tests...")
         tests_passed, test_summary = run_tests()

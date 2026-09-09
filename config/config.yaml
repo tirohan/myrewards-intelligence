@@ -38,6 +38,7 @@ milestone5:
   # Model training settings
   test_size: 0.2
   random_state: 42
+  diagnostic_seeds: [42, 123, 456, 789, 2026]
 
   # LightGBM hyperparameters
   lgbm_params:
