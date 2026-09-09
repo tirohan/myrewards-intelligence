@@ -43,6 +43,19 @@ HEADER_LABELS: dict[str, str] = {
     "rank": "Rank",
     "description": "Description",
     "rationale": "Rationale",
+    "n_treated": "Treated Rows",
+    "n_control": "Control Rows",
+    "treated_closure": "Treated Closure Rate",
+    "control_closure": "Control Closure Rate",
+    "untreated_empty": "Untreated Arm Empty",
+    "uplift_score": "Uplift Score",
+    "recommended_band": "Recommended Band",
+    "quadrant": "Quadrant",
+    "flagged_share": "Share Flagged",
+    "n_flagged": "Rows Flagged",
+    "feature": "Feature",
+    "weight": "Weight",
+    "abs_weight": "Absolute Weight",
 }
 
 _ACRONYMS = {"id", "auc", "shap", "lgbm", "utc", "ddl", "sql", "roi", "hedis"}

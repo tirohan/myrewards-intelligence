@@ -1,56 +1,76 @@
 # Milestone 6: Reward Uplift / Elasticity Analysis
 
-## Scope (from Revised Technical Milestone Plan)
+**Plan:** [`MILESTONE6_PLAN.md`](../../../../../MILESTONE6_PLAN.md) at the
+workspace root (same location as `MILESTONE5_PLAN.md`). Read that before
+implementing. This README is the package stub; the plan is the contract.
 
-This milestone focuses on causal modeling of reward effectiveness:
+## What this milestone answers
 
-1. **Uplift Modeling**: Estimate the incremental effect of rewards on care gap closure
-   - Treatment group: Members who received rewards
-   - Control group: Members who did not receive rewards (or received different reward types)
-   - Outcome: Care gap closure (using Model A's InComm-sourced labels)
+Milestone 5 estimates **P(close)**. Milestone 6 estimates the **incremental
+effect of issuing a reward** (CATE). Targeting high Model A scores pays
+members who would have closed anyway. Milestone 7 ROI needs lift, not
+propensity.
 
-2. **Elasticity Analysis**: Quantify how closure probability changes with reward value
-   - Price elasticity of demand framework
-   - Heterogeneous treatment effects by member characteristics
+## Two tracks (disclosed on every artifact)
 
-3. **Optimal Targeting**: Identify which members benefit most from rewards
-   - Combine Model A's closure probability with uplift estimates
-   - Expected value = P(closure | reward) × uplift × reward efficiency
+| Track | Treatment source | What we may claim |
+|---|---|---|
+| **Track S** | HAR / `sim_MemberRewardSimulations` assignment reconstruction | Method / pipeline only. Never partner-facing lift. Never M7 input. |
+| **Track R (mock)** | Research-generated IncentiveRewards-shaped ledger (real members, gaps, catalog $15–$30) | Pipeline CATE on independent assignment. **Not** InComm-issued. **Must not** feed Milestone 7. |
+| **Track R (production)** | Named IncentiveRewards / InComm issuance ledger | Only this `TreatmentSourceBasis=InComm-issued` may feed Milestone 7. Not available. |
 
-## Dependencies
+`TreatmentSourceBasis` is `Research-simulated`, `Research-generated IncentiveRewards mock`, or `InComm-issued`. Daniel does not have IncentiveRewards; Track R currently generates the mock.
 
-- Milestone 5 output: Model A's scored members with calibrated closure probabilities
-- Real reward issuance data (when available from InComm)
-- Currently blocked on: `sim_MemberRewardSimulations` is synthetic; real reward data needed
+## M5 constraints that are now design inputs
 
-## Implementation Status
+- Never use qualifying-claim features (`qualifying_claim_count` *is* the
+  closing event).
+- Do **not** use leaky Model A (reward features, AUC ~0.94) as μ0 or the
+  targeting propensity axis. Use the **ablation Model A (~0.75 AUC)** or a
+  time-safe refit.
+- Treatment is a **dated gap-level issued event**, not lifetime reward
+  counts. Headline **Y** is InComm-sourced closure only.
+- Grouped member split; seeds `[42, 123, 456, 789, 2026]`.
+- This package **must not import** `milestone5_member_impact_scoring`. Read
+  score files/tables. `core/` stays milestone-agnostic.
+- Naive treated-vs-untreated is invalid: never-rewarded M5 holdout members
+  had 0% closure (no overlap).
 
-**Not yet implemented.** This package is scaffolded and ready for September development.
+## Status
 
-## Data Requirements
+**Track R implemented on a research-generated IncentiveRewards mock** (config
+`track: R`, `generate_incentive_rewards_mock: true`). Production IncentiveRewards
+is still absent. Scores are tagged `Research-generated IncentiveRewards mock`;
+`m7_may_consume=false`. Track S remains available by setting `track: S`.
 
-| Data | Source | Status |
-|------|--------|--------|
-| Member-level features | der_MemberFeatureSnapshots | Available |
-| Care gap closure labels | der_MemberCareGapStatuses | Available (InComm-sourced) |
-| Model A closure probabilities | Milestone 5 output | Available after M5 |
-| Real reward issuance | (not yet available) | **Blocking** |
-| Real reward redemption | (not yet available) | **Blocking** |
+```
+python -m myrewards_intelligence.cli.run_milestone6
+```
 
-## Proposed Modules
+## Modules
 
 ```
 milestone6_reward_uplift/
-├── __init__.py
-├── README.md (this file)
-├── data.py          # Load M5 output + reward data
-├── uplift.py        # Uplift modeling (T-learner, S-learner, etc.)
-├── elasticity.py    # Price elasticity estimation
-├── targeting.py     # Optimal targeting recommendations
-└── reports.py       # Word deliverables
+├── evidence.py          # TreatmentSource, AssignmentMechanism
+├── domain_resolutions.py
+├── incentive_rewards_mock.py # Research-generated IncentiveRewards ledger
+├── data.py              # Track S assignment + Track R ledger adapter
+├── treatment.py         # T at (member, gap); ledger join for Track R
+├── covariates.py
+├── overlap.py           # propensity, ESS, common support
+├── ablation.py          # no-reward P(close); never imports Milestone 5
+├── uplift.py            # S/T/X learners + AIPW ATE
+├── evaluate_uplift.py   # Qini/AUUC, placebo, grouped+stratified seeds
+├── elasticity.py        # dose-response or NOT_AVAILABLE
+├── targeting.py         # quadrants, ranked list, volume curve
+├── plots.py             # propensity, gap contrast, τ volume, quadrants
+├── derived_layer.py     # DDL + scored dataframe
+└── reports.py           # six Word deliverables + shareable copy
 ```
 
-## Non-Negotiable Principle
+CLI: `python -m myrewards_intelligence.cli.run_milestone6`
 
-Any analysis using synthetic reward data must be clearly labeled as such.
-Real uplift estimates require real reward issuance data from InComm.
+## Non-negotiable
+
+Do not mix Model B labels into headline AUUC. Do not invent QBP dollars.
+Do not treat `sim_` rows as production treatment.

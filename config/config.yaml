@@ -62,5 +62,33 @@ milestone5:
     medium: 0.4
     # below medium threshold = Low
 
+milestone6:
+  # S = HAR assignment reconstruction; R = IncentiveRewards-shaped ledger
+  track: R
+  test_size: 0.2
+  random_state: 42
+  diagnostic_seeds: [42, 123, 456, 789, 2026]
+  observation_window_days: 90
+  split_mode: grouped_stratified
+  shareable_dir: milestone6_shareables
+  ablation_scores_path: models/scored_model_a_ablation.csv
+  issuance_ledger_path: models/incentive_rewards_mock.csv
+  generate_incentive_rewards_mock: true
+  mock_treat_probability: 0.45
+  mock_issue_lag_days_min: 7
+  mock_issue_lag_days_max: 45
+  mock_redeem_probability: 0.55
+  # gap_level = Closed ⇔ eligible ⇔ HAR case (Track S).
+  # member_broadcast = lifetime sim count copied onto every gap (M4 artifact).
+  treatment_grain: gap_level
+  min_arm_n: 50
+  min_ess_ratio: 0.25
+  volume_cutpoints: [0.0, 0.03, 0.05, 0.08, 0.10, 0.15]
+  uplift_tiers:
+    tau_treat: 0.05
+    propensity_high: 0.5
+    high: 0.10
+    medium: 0.03
+
 logging:
   level: INFO
