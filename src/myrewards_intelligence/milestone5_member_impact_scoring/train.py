@@ -17,7 +17,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import GroupShuffleSplit
+from sklearn.model_selection import GroupShuffleSplit, StratifiedGroupKFold
 from sklearn.preprocessing import LabelEncoder
 
 from ..core.config import Settings, resolve_path
@@ -43,6 +43,8 @@ class TrainedModel:
     training_date: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     version: str = "v1"
     hyperparameters: dict[str, Any] = field(default_factory=dict)
+    exclude_features: list[str] = field(default_factory=list)
+    split_mode: str = "grouped"
 
 
 def train_test_split_grouped(
@@ -59,6 +61,35 @@ def train_test_split_grouped(
 
     train_idx, test_idx = next(splitter.split(df, groups=groups))
     return train_idx, test_idx
+
+
+def train_test_split_grouped_stratified(
+    df: pd.DataFrame,
+    test_size: float = 0.2,
+    random_state: int = 42,
+    stratify_col: str = "care_gap_code",
+) -> tuple[np.ndarray, np.ndarray]:
+    """Grouped split that also preserves care-gap mix.
+
+    Uses StratifiedGroupKFold so each member stays on one side of the split
+    while care_gap_code prevalence is approximately matched in train and test.
+    n_splits is chosen so one fold is close to ``test_size`` (default 20%).
+    """
+    if stratify_col not in df.columns:
+        logger.warning("Stratify column %s missing; falling back to grouped split", stratify_col)
+        return train_test_split_grouped(df, test_size=test_size, random_state=random_state)
+
+    n_splits = max(2, int(round(1 / test_size)))
+    groups = get_groups(df)
+    y = df[stratify_col].astype(str).values
+
+    try:
+        splitter = StratifiedGroupKFold(n_splits=n_splits, shuffle=True, random_state=random_state)
+        train_idx, test_idx = next(splitter.split(df, y=y, groups=groups))
+        return train_idx, test_idx
+    except ValueError as e:
+        logger.warning("Stratified grouped split failed (%s); falling back to grouped split", e)
+        return train_test_split_grouped(df, test_size=test_size, random_state=random_state)
 
 
 def _check_lightgbm_available() -> bool:
@@ -132,6 +163,9 @@ def train_model(
     model_basis: ModelBasis,
     settings: Settings | None = None,
     model_type: str = "lightgbm",
+    random_state: int | None = None,
+    exclude_features: list[str] | None = None,
+    split_mode: str = "grouped",
 ) -> TrainedModel:
     """Train a model on the provided dataset.
 
@@ -140,6 +174,9 @@ def train_model(
         model_basis: Whether this is Model A (InComm-sourced) or Model B (expanded)
         settings: Configuration settings
         model_type: Type of model to train ('lightgbm' or 'logistic')
+        random_state: Override the configured split seed
+        exclude_features: Feature names to omit from training
+        split_mode: 'grouped' (member_id only) or 'grouped_stratified' (member + care gap)
 
     Returns:
         TrainedModel containing the model and metadata
@@ -149,25 +186,39 @@ def train_model(
 
         settings = load_config()
 
+    excluded = list(exclude_features or [])
+    seed = settings.milestone5.random_state if random_state is None else random_state
+
     target = create_target_variable(df)
-    X, encoders = prepare_features(df, fit_encoders=True)
+    X, encoders = prepare_features(df, fit_encoders=True, exclude_features=excluded)
     feature_names = list(X.columns)
 
-    train_idx, test_idx = train_test_split_grouped(
-        df,
-        test_size=settings.milestone5.test_size,
-        random_state=settings.milestone5.random_state,
-    )
+    if split_mode == "grouped_stratified":
+        train_idx, test_idx = train_test_split_grouped_stratified(
+            df,
+            test_size=settings.milestone5.test_size,
+            random_state=seed,
+        )
+    elif split_mode == "grouped":
+        train_idx, test_idx = train_test_split_grouped(
+            df,
+            test_size=settings.milestone5.test_size,
+            random_state=seed,
+        )
+    else:
+        raise ValueError(f"Unknown split_mode: {split_mode}")
 
     X_train = X.iloc[train_idx]
     y_train = target.iloc[train_idx]
 
     logger.info(
-        "Training %s model (%s): %d train samples, %d test samples",
+        "Training %s model (%s): %d train samples, %d test samples (seed=%s, split=%s)",
         model_type,
         model_basis.value,
         len(train_idx),
         len(test_idx),
+        seed,
+        split_mode,
     )
 
     actual_model_type = model_type
@@ -199,6 +250,8 @@ def train_model(
         test_indices=test_idx,
         label_source_composition=label_composition,
         hyperparameters=hyperparameters,
+        exclude_features=excluded,
+        split_mode=split_mode,
     )
 
 

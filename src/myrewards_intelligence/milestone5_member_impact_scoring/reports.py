@@ -472,6 +472,357 @@ def build_derived_layer_report(
     return doc
 
 
+def _fmt_pct(value: float | None) -> str:
+    if value is None:
+        return "—"
+    return f"{value:.1%}"
+
+
+def _fmt_num(value: float | None, digits: int = 4) -> str:
+    if value is None:
+        return "—"
+    return f"{value:.{digits}f}"
+
+
+def build_followup_report(diagnostics: dict[str, Any]) -> Document:
+    """Dedicated report answering InComm technical-review questions."""
+    doc = new_doc(
+        "Milestone 5 Follow-up Analyses",
+        "Responses to InComm technical review questions — Model A (InComm-sourced)",
+    )
+
+    seeds = diagnostics.get("seeds", [])
+    doc.add_heading("Purpose", level=1)
+    doc.add_paragraph(
+        "This report answers the follow-up questions from the Milestone 5 review. "
+        "Where training was required, Model A was retrained across multiple random seeds "
+        f"({', '.join(str(s) for s in seeds)}) using a member-grouped split. "
+        "Headline v1 metrics in the original five deliverables used seed 42; this document "
+        "shows whether those results are stable."
+    )
+
+    balance = diagnostics.get("class_balance", {})
+    doc.add_heading("1. Closure rate and class imbalance", level=1)
+    add_table(
+        doc,
+        ["metric", "value"],
+        [
+            {"metric": "Model A rows", "value": f"{balance.get('n_rows', 0):,}"},
+            {"metric": "Unique members", "value": f"{balance.get('n_members', 0):,}"},
+            {"metric": "Closed / Open", "value": f"{balance.get('n_closed', 0):,} / {balance.get('n_open', 0):,}"},
+            {"metric": "Closure rate", "value": _fmt_pct(balance.get("closure_rate"))},
+            {"metric": "Imbalance", "value": balance.get("imbalance", "—")},
+            {"metric": "Handling", "value": balance.get("handling", "—")},
+        ],
+    )
+
+    contract = diagnostics.get("contract", {})
+    doc.add_heading("2. Column contract and missingness", level=1)
+    doc.add_paragraph(contract.get("note", ""))
+    add_table(
+        doc,
+        ["metric", "value"],
+        [
+            {"metric": "Analytical dataset columns", "value": str(contract.get("analytical_dataset_columns", "—"))},
+            {"metric": "Loader required columns", "value": str(contract.get("required_columns_in_loader", "—"))},
+            {"metric": "Model features", "value": str(contract.get("model_feature_count", "—"))},
+        ],
+    )
+
+    missing = diagnostics.get("missingness", {})
+    doc.add_paragraph(missing.get("policy", ""))
+    miss_rows = [
+        {
+            "feature": r["feature"],
+            "pct_rows_missing": _fmt_pct(r["pct_rows_missing"]),
+            "pct_members_with_any_missing": _fmt_pct(r["pct_members_with_any_missing"]),
+            "n_rows_missing": r["n_rows_missing"],
+        }
+        for r in missing.get("features", [])
+    ]
+    if miss_rows:
+        add_table(
+            doc,
+            ["feature", "n_rows_missing", "pct_rows_missing", "pct_members_with_any_missing"],
+            miss_rows,
+        )
+
+    dropna = diagnostics.get("variants", {}).get("dropna_prior_closure", {})
+    drop_sum = dropna.get("auc_summary", {})
+    base_sum = diagnostics.get("variants", {}).get("baseline", {}).get("auc_summary", {})
+    doc.add_paragraph(
+        "Sensitivity: retraining after dropping rows missing prior_closure_rate_other_measures "
+        f"(dropped {dropna.get('n_rows_dropped', 0):,} rows) yields mean AUC "
+        f"{_fmt_num(drop_sum.get('mean'))} ± {_fmt_num(drop_sum.get('std'))} versus "
+        f"impute-all mean AUC {_fmt_num(base_sum.get('mean'))} ± {_fmt_num(base_sum.get('std'))}."
+    )
+
+    doc.add_heading("3. Reward features at prediction time (cold start)", level=1)
+    doc.add_paragraph(
+        "Never-rewarded members receive rewards_issued_count = 0, rewards_claimed_count = 0, "
+        "and redemption_rate = 0. avg_days_issue_to_claim is undefined until a claim occurs "
+        "and is median-imputed. The table below is test-set performance on the last baseline seed."
+    )
+    cold = diagnostics.get("cold_start", {})
+    if cold.get("available"):
+        add_table(
+            doc,
+            ["group", "n_test", "closure_rate", "mean_predicted_probability", "auc"],
+            [
+                {
+                    "group": g.get("group"),
+                    "n_test": g.get("n_test"),
+                    "closure_rate": _fmt_pct(g.get("closure_rate")),
+                    "mean_predicted_probability": _fmt_num(g.get("mean_predicted_probability")),
+                    "auc": _fmt_num(g.get("auc")),
+                }
+                for g in cold.get("groups", [])
+            ],
+        )
+
+    ablation = diagnostics.get("variants", {}).get("reward_ablation", {})
+    abl_sum = ablation.get("auc_summary", {})
+    doc.add_paragraph(
+        "Ablation (same seeds, reward features removed): mean AUC "
+        f"{_fmt_num(abl_sum.get('mean'))} ± {_fmt_num(abl_sum.get('std'))}. "
+        f"Drop vs full feature set: {_fmt_num(diagnostics.get('reward_ablation_auc_drop'))}. "
+        "A large drop means the 0.94-range result is engagement-driven and still depends on "
+        "reward aggregates being computed as of scoring time, not after gap closure."
+    )
+
+    doc.add_heading("4. Grouped split vs care-gap stratification", level=1)
+    doc.add_paragraph(
+        "The production split groups on member_id so a member cannot appear in both train and test. "
+        "It is not stratified by care_gap_code by default. The tables show mix for the last seed, "
+        "then mean AUC across seeds for grouped vs grouped+stratified."
+    )
+    for key, title in (("grouped", "Grouped only"), ("grouped_stratified", "Grouped + stratified by care gap")):
+        comp = diagnostics.get("split_composition", {}).get(key, {})
+        doc.add_heading(title, level=2)
+        add_table(
+            doc,
+            ["care_gap_code", "n_train", "n_test", "pct_in_test"],
+            [
+                {
+                    "care_gap_code": r["care_gap_code"],
+                    "n_train": r["n_train"],
+                    "n_test": r["n_test"],
+                    "pct_in_test": _fmt_pct(r["pct_in_test"]),
+                }
+                for r in comp.get("by_care_gap", [])
+            ],
+        )
+
+    strat_sum = diagnostics.get("variants", {}).get("stratified", {}).get("auc_summary", {})
+    add_table(
+        doc,
+        ["variant", "mean_auc", "std_auc", "min_auc", "max_auc"],
+        [
+            {
+                "variant": "Grouped (member_id)",
+                "mean_auc": _fmt_num(base_sum.get("mean")),
+                "std_auc": _fmt_num(base_sum.get("std")),
+                "min_auc": _fmt_num(base_sum.get("min")),
+                "max_auc": _fmt_num(base_sum.get("max")),
+            },
+            {
+                "variant": "Grouped + stratified by care gap",
+                "mean_auc": _fmt_num(strat_sum.get("mean")),
+                "std_auc": _fmt_num(strat_sum.get("std")),
+                "min_auc": _fmt_num(strat_sum.get("min")),
+                "max_auc": _fmt_num(strat_sum.get("max")),
+            },
+        ],
+    )
+
+    doc.add_heading("5. AUC stability and what we treat as acceptable", level=1)
+    band = diagnostics.get("acceptable_auc_band", {})
+    doc.add_paragraph(band.get("interpretation", ""))
+    variant_rows = []
+    for key, label in (
+        ("baseline", "Full features, grouped split, median impute"),
+        ("stratified", "Full features, grouped + stratified"),
+        ("reward_ablation", "No reward features"),
+        ("dropna_prior_closure", "Drop missing prior_closure_rate"),
+    ):
+        summary = diagnostics.get("variants", {}).get(key, {}).get("auc_summary", {})
+        variant_rows.append(
+            {
+                "variant": label,
+                "mean_auc": _fmt_num(summary.get("mean")),
+                "std_auc": _fmt_num(summary.get("std")),
+                "min_auc": _fmt_num(summary.get("min")),
+                "max_auc": _fmt_num(summary.get("max")),
+            }
+        )
+    add_table(doc, ["variant", "mean_auc", "std_auc", "min_auc", "max_auc"], variant_rows)
+
+    doc.add_heading("Per-seed AUC (baseline grouped split)", level=2)
+    add_table(
+        doc,
+        ["seed", "auc", "brier", "precision", "recall"],
+        diagnostics.get("variants", {}).get("baseline", {}).get("per_seed", []),
+    )
+
+    doc.add_heading("6. Operating threshold vs outreach volume", level=1)
+    thresh = diagnostics.get("thresholds", {})
+    doc.add_paragraph(thresh.get("reporting_threshold_note", ""))
+    add_table(
+        doc,
+        ["threshold", "precision", "recall", "f1", "n_flagged", "pct_flagged"],
+        [
+            {
+                "threshold": r["threshold"],
+                "precision": _fmt_num(r["precision"]),
+                "recall": _fmt_num(r["recall"]),
+                "f1": _fmt_num(r["f1"]),
+                "n_flagged": r["n_flagged"],
+                "pct_flagged": _fmt_pct(r["pct_flagged"]),
+            }
+            for r in thresh.get("curve", [])
+        ],
+    )
+    if thresh.get("tiers"):
+        doc.add_heading("High / Medium / Low mix on the test set", level=2)
+        add_table(
+            doc,
+            ["tier", "n_test", "pct_test", "closure_rate"],
+            [
+                {
+                    "tier": t["tier"],
+                    "n_test": t["n_test"],
+                    "pct_test": _fmt_pct(t["pct_test"]),
+                    "closure_rate": _fmt_pct(t["closure_rate"]) if t.get("closure_rate") is not None else "—",
+                }
+                for t in thresh["tiers"]
+            ],
+        )
+    doc.add_paragraph(
+        "Who acts on the score is an InComm operating decision. Short care-manager lists "
+        "should use a higher threshold (precision). Broader pharmacist or campaign outreach "
+        "can use a lower threshold (recall). We will lock cut-points once capacity is specified."
+    )
+
+    return doc
+
+
+def write_followup_markdown(diagnostics: dict[str, Any], path: Any) -> str:
+    """Write a Markdown copy of the follow-up report."""
+    from pathlib import Path
+
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    seeds = diagnostics.get("seeds", [])
+    balance = diagnostics.get("class_balance", {})
+    contract = diagnostics.get("contract", {})
+    missing = diagnostics.get("missingness", {})
+    variants = diagnostics.get("variants", {})
+    band = diagnostics.get("acceptable_auc_band", {})
+    thresh = diagnostics.get("thresholds", {})
+
+    def line_table(headers: list[str], rows: list[dict[str, Any]]) -> str:
+        out = ["| " + " | ".join(headers) + " |", "| " + " | ".join("---" for _ in headers) + " |"]
+        for row in rows:
+            out.append("| " + " | ".join(str(row.get(h, "")) for h in headers) + " |")
+        return "\n".join(out)
+
+    miss_rows = [
+        {
+            "feature": r["feature"],
+            "rows_missing": f"{r['n_rows_missing']} ({r['pct_rows_missing']:.1%})",
+            "members_missing": f"{r['n_members_with_any_missing']} ({r['pct_members_with_any_missing']:.1%})",
+        }
+        for r in missing.get("features", [])
+    ]
+    variant_rows = []
+    labels = {
+        "baseline": "Full features, grouped",
+        "stratified": "Grouped + stratified",
+        "reward_ablation": "No reward features",
+        "dropna_prior_closure": "Drop missing prior_closure_rate",
+    }
+    for key, label in labels.items():
+        s = variants.get(key, {}).get("auc_summary", {})
+        variant_rows.append(
+            {
+                "variant": label,
+                "mean_auc": _fmt_num(s.get("mean")),
+                "std": _fmt_num(s.get("std")),
+                "min": _fmt_num(s.get("min")),
+                "max": _fmt_num(s.get("max")),
+            }
+        )
+
+    cold_lines = ""
+    for g in diagnostics.get("cold_start", {}).get("groups", []):
+        cold_lines += (
+            f"- {g.get('group')}: n={g.get('n_test')}, closure={_fmt_pct(g.get('closure_rate'))}, "
+            f"mean p={_fmt_num(g.get('mean_predicted_probability'))}, AUC={_fmt_num(g.get('auc'))}\n"
+        )
+
+    curve_rows = [
+        {
+            "threshold": r["threshold"],
+            "precision": _fmt_num(r["precision"]),
+            "recall": _fmt_num(r["recall"]),
+            "f1": _fmt_num(r["f1"]),
+            "n_flagged": r["n_flagged"],
+            "pct_flagged": _fmt_pct(r["pct_flagged"]),
+        }
+        for r in thresh.get("curve", [])
+    ]
+
+    content = f"""# Milestone 5 Follow-up Analyses
+
+Prepared by: KSU mHealth Research Lab
+
+This report answers InComm technical-review questions. Training variants used seeds {seeds}.
+
+## 1. Closure rate and imbalance
+
+- Model A rows: {balance.get('n_rows', 0):,}
+- Unique members: {balance.get('n_members', 0):,}
+- Closed / Open: {balance.get('n_closed', 0):,} / {balance.get('n_open', 0):,}
+- Closure rate: {_fmt_pct(balance.get('closure_rate'))}
+- Handling: {balance.get('handling', '')}
+
+## 2. Columns and missingness
+
+{contract.get('note', '')}
+
+{line_table(['feature', 'rows_missing', 'members_missing'], miss_rows)}
+
+Policy: {missing.get('policy', '')}
+
+## 3. Reward features / cold start
+
+Never-rewarded members get zeros on issued/claimed/redemption; avg_days_issue_to_claim is median-imputed.
+
+{cold_lines}
+
+Reward ablation mean AUC: {_fmt_num(variants.get('reward_ablation', {}).get('auc_summary', {}).get('mean'))} (drop vs full: {_fmt_num(diagnostics.get('reward_ablation_auc_drop'))}).
+
+## 4-5. Split, AUC stability, acceptable band
+
+{band.get('interpretation', '')}
+
+{line_table(['variant', 'mean_auc', 'std', 'min', 'max'], variant_rows)}
+
+### Baseline per seed
+
+{line_table(['seed', 'auc', 'brier', 'precision', 'recall'], variants.get('baseline', {}).get('per_seed', []))}
+
+## 6. Threshold vs volume
+
+{thresh.get('reporting_threshold_note', '')}
+
+{line_table(['threshold', 'precision', 'recall', 'f1', 'n_flagged', 'pct_flagged'], curve_rows)}
+"""
+    path.write_text(content, encoding="utf-8")
+    logger.info("Wrote follow-up markdown: %s", path)
+    return str(path)
+
+
 def write_all_reports(
     trained_model_a: TrainedModel,
     trained_model_b: TrainedModel,

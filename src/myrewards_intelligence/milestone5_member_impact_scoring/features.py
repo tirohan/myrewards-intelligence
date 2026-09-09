@@ -30,6 +30,13 @@ DROP_COLUMNS = [
 # Features available at prediction time (EXCLUDING leakage features)
 # REMOVED: qualifying_claim_count - This IS the outcome (qualifying claim = gap closed)
 # REMOVED: days_since_last_qualifying_claim - Derived from outcome
+REWARD_FEATURES = [
+    "rewards_issued_count",
+    "rewards_claimed_count",
+    "redemption_rate",
+    "avg_days_issue_to_claim",
+]
+
 FEATURE_COLUMNS = [
     "days_since_gap_opened",
     "prior_closure_rate_other_measures",
@@ -100,6 +107,7 @@ def prepare_features(
     df: pd.DataFrame,
     fit_encoders: bool = True,
     encoders: dict[str, LabelEncoder] | None = None,
+    exclude_features: list[str] | None = None,
 ) -> tuple[pd.DataFrame, dict[str, LabelEncoder]]:
     """Prepare features for model training.
 
@@ -107,6 +115,7 @@ def prepare_features(
         df: Input DataFrame with all columns
         fit_encoders: Whether to fit new encoders (True for training, False for inference)
         encoders: Pre-fitted encoders to use (required if fit_encoders=False)
+        exclude_features: Feature names to omit (e.g. reward fields for ablation)
 
     Returns:
         Tuple of (feature DataFrame, fitted encoders dict)
@@ -118,8 +127,8 @@ def prepare_features(
     if encoders is None:
         encoders = {}
 
-    # Select only allowed features (explicit inclusion, not exclusion)
-    allowed_columns = set(FEATURE_COLUMNS + CATEGORICAL_COLUMNS)
+    excluded = set(exclude_features or [])
+    allowed_columns = set(FEATURE_COLUMNS + CATEGORICAL_COLUMNS) - excluded
     available_columns = [col for col in allowed_columns if col in df.columns]
     feature_df = df[available_columns].copy()
 

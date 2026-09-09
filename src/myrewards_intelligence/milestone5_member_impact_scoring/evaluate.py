@@ -62,7 +62,12 @@ def evaluate_model(
         EvaluationResults containing all metrics
     """
     target = create_target_variable(df)
-    X, _ = prepare_features(df, fit_encoders=False, encoders=trained_model.encoders)
+    X, _ = prepare_features(
+        df,
+        fit_encoders=False,
+        encoders=trained_model.encoders,
+        exclude_features=trained_model.exclude_features,
+    )
 
     test_idx = trained_model.test_indices
     X_test = X.iloc[test_idx]
@@ -137,7 +142,12 @@ def generate_subgroup_metrics(
         List of dicts with subgroup metrics
     """
     target = create_target_variable(df)
-    X, _ = prepare_features(df, fit_encoders=False, encoders=trained_model.encoders)
+    X, _ = prepare_features(
+        df,
+        fit_encoders=False,
+        encoders=trained_model.encoders,
+        exclude_features=trained_model.exclude_features,
+    )
 
     test_idx = trained_model.test_indices
     X_test = X.iloc[test_idx]

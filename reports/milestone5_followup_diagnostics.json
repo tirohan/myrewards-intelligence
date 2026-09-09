@@ -1,0 +1,573 @@
+{
+  "seeds": [
+    42,
+    123,
+    456,
+    789,
+    2026
+  ],
+  "contract": {
+    "analytical_dataset_columns": 28,
+    "required_columns_in_loader": 28,
+    "model_feature_count": 20,
+    "model_features": [
+      "days_since_gap_opened",
+      "prior_closure_rate_other_measures",
+      "AgeYears",
+      "ConditionCount",
+      "ClaimLineCount",
+      "OtcTransactionLineCount",
+      "BenefitTransactionCount",
+      "TotalSpend",
+      "HealthySpend",
+      "HealthySpendRatio",
+      "DaysSinceClinicalService",
+      "DaysSinceOtcTransaction",
+      "DaysSinceBenefitTransaction",
+      "rewards_issued_count",
+      "rewards_claimed_count",
+      "redemption_rate",
+      "avg_days_issue_to_claim",
+      "condition_code",
+      "PrimaryCondition",
+      "Sex"
+    ],
+    "note": "The analytical dataset used for Milestone 5 has 28 columns (loader requires 28). The fitted model uses 20 features after dropping identifiers, the label, and leaking qualifying-claim fields. There is no 44-column contract in this codebase."
+  },
+  "class_balance": {
+    "n_rows": 11669,
+    "n_members": 6668,
+    "n_closed": 4726,
+    "n_open": 6943,
+    "closure_rate": 0.40500471334304566,
+    "imbalance": "moderate (not rare-event)",
+    "handling": "class_weight='balanced' in the logistic pipeline; no downsampling or synthetic labels"
+  },
+  "missingness": {
+    "n_rows": 11669,
+    "n_members": 6668,
+    "policy": "Rows are not dropped. No sentinel values. Numeric missings are median-imputed inside the training pipeline (SimpleImputer).",
+    "features": [
+      {
+        "feature": "days_since_gap_opened",
+        "n_rows_missing": 0,
+        "pct_rows_missing": 0.0,
+        "n_members_with_any_missing": 0,
+        "pct_members_with_any_missing": 0.0
+      },
+      {
+        "feature": "prior_closure_rate_other_measures",
+        "n_rows_missing": 1042,
+        "pct_rows_missing": 0.08929642642899992,
+        "n_members_with_any_missing": 1042,
+        "pct_members_with_any_missing": 0.15626874625074985
+      },
+      {
+        "feature": "rewards_issued_count",
+        "n_rows_missing": 0,
+        "pct_rows_missing": 0.0,
+        "n_members_with_any_missing": 0,
+        "pct_members_with_any_missing": 0.0
+      },
+      {
+        "feature": "rewards_claimed_count",
+        "n_rows_missing": 0,
+        "pct_rows_missing": 0.0,
+        "n_members_with_any_missing": 0,
+        "pct_members_with_any_missing": 0.0
+      },
+      {
+        "feature": "redemption_rate",
+        "n_rows_missing": 0,
+        "pct_rows_missing": 0.0,
+        "n_members_with_any_missing": 0,
+        "pct_members_with_any_missing": 0.0
+      },
+      {
+        "feature": "avg_days_issue_to_claim",
+        "n_rows_missing": 5353,
+        "pct_rows_missing": 0.45873682406375865,
+        "n_members_with_any_missing": 3694,
+        "pct_members_with_any_missing": 0.553989202159568
+      }
+    ]
+  },
+  "variants": {
+    "baseline": {
+      "label": "grouped_impute_all_features",
+      "split_mode": "grouped",
+      "exclude_features": [],
+      "dropna_column": null,
+      "n_rows_dropped": 0,
+      "n_rows_used": 11669,
+      "per_seed": [
+        {
+          "seed": 42,
+          "auc": 0.9448147254109598,
+          "brier": 0.09377377263645216,
+          "precision": 0.8835920177383592,
+          "recall": 0.8336820083682008,
+          "f1": 0.8579117330462863,
+          "n_train": 9309,
+          "n_test": 2360
+        },
+        {
+          "seed": 123,
+          "auc": 0.937700939176641,
+          "brier": 0.09626298330032862,
+          "precision": 0.8939393939393939,
+          "recall": 0.8099260823653643,
+          "f1": 0.8498614958448754,
+          "n_train": 9288,
+          "n_test": 2381
+        },
+        {
+          "seed": 456,
+          "auc": 0.9431196300007807,
+          "brier": 0.0941276211220257,
+          "precision": 0.8737083811710677,
+          "recall": 0.8280739934711643,
+          "f1": 0.8502793296089386,
+          "n_train": 9384,
+          "n_test": 2285
+        },
+        {
+          "seed": 789,
+          "auc": 0.9414333472942158,
+          "brier": 0.09488096730754118,
+          "precision": 0.8931034482758621,
+          "recall": 0.8153200419727177,
+          "f1": 0.8524410312671421,
+          "n_train": 9318,
+          "n_test": 2351
+        },
+        {
+          "seed": 2026,
+          "auc": 0.9383786550020242,
+          "brier": 0.09612989640702863,
+          "precision": 0.8751445086705202,
+          "recall": 0.79768177028451,
+          "f1": 0.834619625137817,
+          "n_train": 9291,
+          "n_test": 2378
+        }
+      ],
+      "auc_summary": {
+        "mean": 0.9410894593769242,
+        "std": 0.0030392428412629557,
+        "min": 0.937700939176641,
+        "max": 0.9448147254109598,
+        "n": 5
+      }
+    },
+    "stratified": {
+      "label": "grouped_stratified_by_care_gap",
+      "split_mode": "grouped_stratified",
+      "exclude_features": [],
+      "dropna_column": null,
+      "n_rows_dropped": 0,
+      "n_rows_used": 11669,
+      "per_seed": [
+        {
+          "seed": 42,
+          "auc": 0.9449627320486098,
+          "brier": 0.09426029283666289,
+          "precision": 0.8890160183066361,
+          "recall": 0.823966065747614,
+          "f1": 0.8552559163456247,
+          "n_train": 9334,
+          "n_test": 2335
+        },
+        {
+          "seed": 123,
+          "auc": 0.9419449403878557,
+          "brier": 0.09453442421230666,
+          "precision": 0.9105011933174224,
+          "recall": 0.806553911205074,
+          "f1": 0.8553811659192825,
+          "n_train": 9334,
+          "n_test": 2335
+        },
+        {
+          "seed": 456,
+          "auc": 0.9397153636826542,
+          "brier": 0.09577628404430726,
+          "precision": 0.8738938053097345,
+          "recall": 0.8152734778121775,
+          "f1": 0.8435664709022958,
+          "n_train": 9334,
+          "n_test": 2335
+        },
+        {
+          "seed": 789,
+          "auc": 0.9424888072551946,
+          "brier": 0.09229172258443398,
+          "precision": 0.884393063583815,
+          "recall": 0.8225806451612904,
+          "f1": 0.8523676880222841,
+          "n_train": 9334,
+          "n_test": 2335
+        },
+        {
+          "seed": 2026,
+          "auc": 0.938832991881023,
+          "brier": 0.0970588651775582,
+          "precision": 0.8819599109131403,
+          "recall": 0.8293193717277487,
+          "f1": 0.8548300053966541,
+          "n_train": 9334,
+          "n_test": 2335
+        }
+      ],
+      "auc_summary": {
+        "mean": 0.9415889670510674,
+        "std": 0.0024199436144330348,
+        "min": 0.938832991881023,
+        "max": 0.9449627320486098,
+        "n": 5
+      }
+    },
+    "reward_ablation": {
+      "label": "grouped_without_reward_features",
+      "split_mode": "grouped",
+      "exclude_features": [
+        "rewards_issued_count",
+        "rewards_claimed_count",
+        "redemption_rate",
+        "avg_days_issue_to_claim"
+      ],
+      "dropna_column": null,
+      "n_rows_dropped": 0,
+      "n_rows_used": 11669,
+      "per_seed": [
+        {
+          "seed": 42,
+          "auc": 0.7582676214998391,
+          "brier": 0.20972181241592827,
+          "precision": 0.6870451237263464,
+          "recall": 0.49372384937238495,
+          "f1": 0.5745587340231284,
+          "n_train": 9309,
+          "n_test": 2360
+        },
+        {
+          "seed": 123,
+          "auc": 0.7496365974029416,
+          "brier": 0.21314955736054458,
+          "precision": 0.6539027982326951,
+          "recall": 0.46884899683210135,
+          "f1": 0.5461254612546126,
+          "n_train": 9288,
+          "n_test": 2381
+        },
+        {
+          "seed": 456,
+          "auc": 0.7371992282654933,
+          "brier": 0.21705773013345153,
+          "precision": 0.6256544502617801,
+          "recall": 0.5201305767138193,
+          "f1": 0.5680332739156269,
+          "n_train": 9384,
+          "n_test": 2285
+        },
+        {
+          "seed": 789,
+          "auc": 0.749071901547256,
+          "brier": 0.21207137800536502,
+          "precision": 0.6520547945205479,
+          "recall": 0.4994753410283316,
+          "f1": 0.5656565656565656,
+          "n_train": 9318,
+          "n_test": 2351
+        },
+        {
+          "seed": 2026,
+          "auc": 0.7441976047860036,
+          "brier": 0.2147146449030379,
+          "precision": 0.6455172413793103,
+          "recall": 0.4931506849315068,
+          "f1": 0.5591397849462365,
+          "n_train": 9291,
+          "n_test": 2378
+        }
+      ],
+      "auc_summary": {
+        "mean": 0.7476745907003068,
+        "std": 0.0077433342077716915,
+        "min": 0.7371992282654933,
+        "max": 0.7582676214998391,
+        "n": 5
+      }
+    },
+    "dropna_prior_closure": {
+      "label": "grouped_drop_missing_prior_closure_rate",
+      "split_mode": "grouped",
+      "exclude_features": [],
+      "dropna_column": "prior_closure_rate_other_measures",
+      "n_rows_dropped": 1042,
+      "n_rows_used": 10627,
+      "per_seed": [
+        {
+          "seed": 42,
+          "auc": 0.9385755042696857,
+          "brier": 0.09955982163552234,
+          "precision": 0.8692403486924035,
+          "recall": 0.8329355608591885,
+          "f1": 0.8507007921998782,
+          "n_train": 8571,
+          "n_test": 2056
+        },
+        {
+          "seed": 123,
+          "auc": 0.928647198123864,
+          "brier": 0.10200680712551191,
+          "precision": 0.8651226158038147,
+          "recall": 0.7725060827250608,
+          "f1": 0.8161953727506427,
+          "n_train": 8532,
+          "n_test": 2095
+        },
+        {
+          "seed": 456,
+          "auc": 0.9186577286720241,
+          "brier": 0.11080124941160298,
+          "precision": 0.8608923884514436,
+          "recall": 0.7818831942789034,
+          "f1": 0.8194878201124297,
+          "n_train": 8484,
+          "n_test": 2143
+        },
+        {
+          "seed": 789,
+          "auc": 0.9239071185225032,
+          "brier": 0.1067991150638781,
+          "precision": 0.8640522875816994,
+          "recall": 0.7703962703962703,
+          "f1": 0.8145409735058533,
+          "n_train": 8469,
+          "n_test": 2158
+        },
+        {
+          "seed": 2026,
+          "auc": 0.9267623451016027,
+          "brier": 0.10490190732360208,
+          "precision": 0.847394540942928,
+          "recall": 0.8160095579450418,
+          "f1": 0.8314059646987219,
+          "n_train": 8583,
+          "n_test": 2044
+        }
+      ],
+      "auc_summary": {
+        "mean": 0.927309978937936,
+        "std": 0.007338954500490818,
+        "min": 0.9186577286720241,
+        "max": 0.9385755042696857,
+        "n": 5
+      }
+    }
+  },
+  "split_composition": {
+    "grouped": {
+      "split_label": "grouped (seed=last)",
+      "n_train": 9291,
+      "n_test": 2378,
+      "n_train_members": 5334,
+      "n_test_members": 1334,
+      "by_care_gap": [
+        {
+          "care_gap_code": "BH_POST_DISCHARGE_7D",
+          "n_train": 1317,
+          "n_test": 350,
+          "pct_in_test": 0.20995800839832032
+        },
+        {
+          "care_gap_code": "COPD_SPIROMETRY",
+          "n_train": 1337,
+          "n_test": 330,
+          "pct_in_test": 0.19796040791841632
+        },
+        {
+          "care_gap_code": "DIAB_A1C_TEST",
+          "n_train": 1319,
+          "n_test": 348,
+          "pct_in_test": 0.20875824835032994
+        },
+        {
+          "care_gap_code": "DIAB_BLOOD_SUGAR",
+          "n_train": 1319,
+          "n_test": 348,
+          "pct_in_test": 0.20875824835032994
+        },
+        {
+          "care_gap_code": "DIAB_EYE_EXAM",
+          "n_train": 1319,
+          "n_test": 348,
+          "pct_in_test": 0.20875824835032994
+        },
+        {
+          "care_gap_code": "DIAB_NEPHRO_SCREEN",
+          "n_train": 1319,
+          "n_test": 348,
+          "pct_in_test": 0.20875824835032994
+        },
+        {
+          "care_gap_code": "HTN_PCP_FOLLOWUP",
+          "n_train": 1361,
+          "n_test": 306,
+          "pct_in_test": 0.1835632873425315
+        }
+      ]
+    },
+    "grouped_stratified": {
+      "split_label": "grouped_stratified (seed=last)",
+      "n_train": 9334,
+      "n_test": 2335,
+      "n_train_members": 5335,
+      "n_test_members": 1333,
+      "by_care_gap": [
+        {
+          "care_gap_code": "BH_POST_DISCHARGE_7D",
+          "n_train": 1334,
+          "n_test": 333,
+          "pct_in_test": 0.19976004799040192
+        },
+        {
+          "care_gap_code": "COPD_SPIROMETRY",
+          "n_train": 1334,
+          "n_test": 333,
+          "pct_in_test": 0.19976004799040192
+        },
+        {
+          "care_gap_code": "DIAB_A1C_TEST",
+          "n_train": 1333,
+          "n_test": 334,
+          "pct_in_test": 0.20035992801439712
+        },
+        {
+          "care_gap_code": "DIAB_BLOOD_SUGAR",
+          "n_train": 1333,
+          "n_test": 334,
+          "pct_in_test": 0.20035992801439712
+        },
+        {
+          "care_gap_code": "DIAB_EYE_EXAM",
+          "n_train": 1333,
+          "n_test": 334,
+          "pct_in_test": 0.20035992801439712
+        },
+        {
+          "care_gap_code": "DIAB_NEPHRO_SCREEN",
+          "n_train": 1333,
+          "n_test": 334,
+          "pct_in_test": 0.20035992801439712
+        },
+        {
+          "care_gap_code": "HTN_PCP_FOLLOWUP",
+          "n_train": 1334,
+          "n_test": 333,
+          "pct_in_test": 0.19976004799040192
+        }
+      ]
+    }
+  },
+  "cold_start": {
+    "available": true,
+    "groups": [
+      {
+        "group": "never_rewarded",
+        "n_test": 425,
+        "closure_rate": 0.0,
+        "mean_predicted_probability": 0.061085598201638086,
+        "auc": null
+      },
+      {
+        "group": "has_reward_history",
+        "n_test": 1953,
+        "closure_rate": 0.48591909882232465,
+        "mean_predicted_probability": 0.517720316306714,
+        "auc": 0.9176318960197146
+      }
+    ]
+  },
+  "thresholds": {
+    "n_test": 2378,
+    "reporting_threshold_note": "0.50 is a comparable reporting point, not an operational cut. Choose a threshold from outreach capacity (care managers vs campaigns).",
+    "curve": [
+      {
+        "threshold": 0.3,
+        "precision": 0.6797839506172839,
+        "recall": 0.928345626975764,
+        "f1": 0.7848552338530067,
+        "n_flagged": 1296,
+        "pct_flagged": 0.5449957947855341
+      },
+      {
+        "threshold": 0.4,
+        "precision": 0.8694232861806311,
+        "recall": 0.8419388830347735,
+        "f1": 0.8554603854389722,
+        "n_flagged": 919,
+        "pct_flagged": 0.3864592094196804
+      },
+      {
+        "threshold": 0.5,
+        "precision": 0.8751445086705202,
+        "recall": 0.79768177028451,
+        "f1": 0.834619625137817,
+        "n_flagged": 865,
+        "pct_flagged": 0.36375105130361646
+      },
+      {
+        "threshold": 0.6,
+        "precision": 0.947945205479452,
+        "recall": 0.7291886195995785,
+        "f1": 0.8243001786777844,
+        "n_flagged": 730,
+        "pct_flagged": 0.3069806560134567
+      },
+      {
+        "threshold": 0.7,
+        "precision": 0.945480631276901,
+        "recall": 0.6944151738672286,
+        "f1": 0.8007290400972054,
+        "n_flagged": 697,
+        "pct_flagged": 0.29310344827586204
+      },
+      {
+        "threshold": 0.8,
+        "precision": 0.9378068739770867,
+        "recall": 0.6037934668071654,
+        "f1": 0.7346153846153847,
+        "n_flagged": 611,
+        "pct_flagged": 0.2569386038687973
+      }
+    ],
+    "tiers": [
+      {
+        "tier": "High",
+        "n_test": 697,
+        "pct_test": 0.29310344827586204,
+        "closure_rate": 0.945480631276901
+      },
+      {
+        "tier": "Medium",
+        "n_test": 222,
+        "pct_test": 0.09335576114381834,
+        "closure_rate": 0.6306306306306306
+      },
+      {
+        "tier": "Low",
+        "n_test": 1459,
+        "pct_test": 0.6135407905803196,
+        "closure_rate": 0.10281014393420151
+      }
+    ]
+  },
+  "acceptable_auc_band": {
+    "low": 0.7,
+    "high": 0.8,
+    "interpretation": "For care-gap ranking we treat ~0.70\u20130.80 as useful for prioritization. Values above 0.90 warrant a time-safety check on reward features."
+  },
+  "reward_ablation_auc_drop": 0.1934148686766174
+}

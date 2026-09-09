@@ -57,6 +57,7 @@ class Milestone5Config(BaseModel):
 
     test_size: float = 0.2
     random_state: int = 42
+    diagnostic_seeds: list[int] = Field(default_factory=lambda: [42, 123, 456, 789, 2026])
     lgbm_params: LGBMParams = Field(default_factory=LGBMParams)
     operating_threshold: float = 0.5
     score_tiers: ScoreTiers = Field(default_factory=ScoreTiers)
