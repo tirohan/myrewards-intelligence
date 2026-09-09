@@ -63,6 +63,41 @@ class Milestone5Config(BaseModel):
     score_tiers: ScoreTiers = Field(default_factory=ScoreTiers)
 
 
+class UpliftTiers(BaseModel):
+    """Uplift targeting cut-points."""
+
+    tau_treat: float = 0.05
+    propensity_high: float = 0.5
+    high: float = 0.10
+    medium: float = 0.03
+
+
+class Milestone6Config(BaseModel):
+    """Milestone 6 reward-uplift configuration."""
+
+    track: str = "S"
+    test_size: float = 0.2
+    random_state: int = 42
+    diagnostic_seeds: list[int] = Field(default_factory=lambda: [42, 123, 456, 789, 2026])
+    observation_window_days: int = 90
+    split_mode: str = "grouped_stratified"
+    shareable_dir: str = "milestone6_shareables"
+    ablation_scores_path: str = "models/scored_model_a_ablation.csv"
+    issuance_ledger_path: str = "models/incentive_rewards_mock.csv"
+    treatment_grain: str = "gap_level"
+    generate_incentive_rewards_mock: bool = True
+    mock_treat_probability: float = 0.45
+    mock_issue_lag_days_min: int = 7
+    mock_issue_lag_days_max: int = 45
+    mock_redeem_probability: float = 0.55
+    min_arm_n: int = 50
+    min_ess_ratio: float = 0.25
+    volume_cutpoints: list[float] = Field(
+        default_factory=lambda: [0.0, 0.03, 0.05, 0.08, 0.10, 0.15]
+    )
+    uplift_tiers: UpliftTiers = Field(default_factory=UpliftTiers)
+
+
 class LoggingConfig(BaseModel):
     """Logging configuration."""
 
@@ -87,6 +122,7 @@ class Settings(BaseSettings):
         }
     )
     milestone5: Milestone5Config = Field(default_factory=Milestone5Config)
+    milestone6: Milestone6Config = Field(default_factory=Milestone6Config)
     logging: LoggingConfig = Field(default_factory=LoggingConfig)
 
 
@@ -106,6 +142,7 @@ def load_config(config_path: str | Path = "config/config.yaml") -> Settings:
     paths = raw.get("paths", {})
     mode = raw.get("mode", {})
     m5 = raw.get("milestone5", {})
+    m6 = raw.get("milestone6", {})
     logging_cfg = raw.get("logging", {})
 
     return Settings(
@@ -115,6 +152,7 @@ def load_config(config_path: str | Path = "config/config.yaml") -> Settings:
         mode_requested=mode.get("requested", "auto"),
         layer_prefixes=raw.get("layer_prefixes", {}),
         milestone5=Milestone5Config(**m5) if m5 else Milestone5Config(),
+        milestone6=Milestone6Config(**m6) if m6 else Milestone6Config(),
         logging=LoggingConfig(**logging_cfg) if logging_cfg else LoggingConfig(),
     )
 
