@@ -1,0 +1,56 @@
+{
+  "name": "milestone6",
+  "git_sha": "6de19ea",
+  "config": {
+    "track": "R",
+    "test_size": 0.2,
+    "random_state": 42,
+    "diagnostic_seeds": [
+      42,
+      123,
+      456,
+      789,
+      2026
+    ],
+    "observation_window_days": 365,
+    "split_mode": "grouped_stratified",
+    "shareable_dir": "milestone6_shareables",
+    "ablation_scores_path": "models/scored_model_a_ablation.csv",
+    "reward_amount_pools_path": "config/reward_amount_pools.csv",
+    "issuance_ledger_path": "models/incentive_rewards_mock.csv",
+    "treatment_grain": "gap_level",
+    "generate_incentive_rewards_mock": true,
+    "mock_treat_probability": 0.45,
+    "mock_issue_lag_days_min": 7,
+    "mock_issue_lag_days_max": 45,
+    "mock_redeem_probability": 0.988,
+    "min_arm_n": 50,
+    "min_ess_ratio": 0.25,
+    "volume_cutpoints": [
+      0.0,
+      0.03,
+      0.05,
+      0.08,
+      0.1,
+      0.15
+    ],
+    "uplift_tiers": {
+      "tau_treat": 0.05,
+      "high_risk_top_share": 0.1,
+      "high": 0.1,
+      "medium": 0.03
+    }
+  },
+  "inputs": {
+    "/Volumes/research/mhealth/InComm/Milestones/InComm_Milestone2/myrewards-intelligence/data/analytical_dataset.csv": "112c9dc7ac2c2149c41794fb15ea1d36248a058888c368fd9c0f65cebf6d3512",
+    "/Volumes/research/mhealth/InComm/Milestones/InComm_Milestone2/myrewards-intelligence/models/incentive_rewards_mock.csv": "1e13c51819facfe879c05fbe1d42f9316d8a3b2ec64dcc06ecba3f2e62b51353"
+  },
+  "metrics": {
+    "n_rows": 11669,
+    "n_treated": 5217,
+    "cate_identified": true,
+    "ate_mean": 0.011437807450042827,
+    "ate_se": 0.018726561798153702,
+    "auuc_mean": 0.01080567138349442
+  }
+}

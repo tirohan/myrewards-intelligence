@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pandas as pd
 
 from myrewards_intelligence.core.evidence import ModelBasis
@@ -60,5 +62,5 @@ def test_followup_diagnostics_multi_seed(incomm_only_dataset: pd.DataFrame, tmp_
     doc = build_followup_report(diagnostics)
     assert doc.paragraphs
     md_path = write_followup_markdown(diagnostics, tmp_path / "followup.md")
-    text = open(md_path, encoding="utf-8").read()
+    text = Path(md_path).read_text(encoding="utf-8")
     assert "Closure rate" in text

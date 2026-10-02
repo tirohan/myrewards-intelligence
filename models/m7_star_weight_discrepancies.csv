@@ -1,0 +1,8 @@
+CareGapCode,HedisMeasureId,StarsWeight,cms_measure_id,cms_2026_weight,note
+BH_POST_DISCHARGE_7D,FUH-7,3,,,not a 2026 Part C Star measure
+COPD_SPIROMETRY,SPR,1,,,not a 2026 Part C Star measure
+DIAB_A1C_TEST,CDC-A1C,3,C12,3.0,matches
+DIAB_BLOOD_SUGAR,CDC-A1C,3,C12,3.0,matches
+DIAB_EYE_EXAM,CDC-EYE,3,C11,1.0,InComm weight differs from CMS
+DIAB_NEPHRO_SCREEN,KED,3,C13,1.0,InComm weight differs from CMS
+HTN_PCP_FOLLOWUP,CBP,3,C14,3.0,matches

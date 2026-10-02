@@ -1,0 +1,4 @@
+assumption,provenance,value_at_low_input,value_at_high_input,swing_usd
+eligible_share (diabetes / hypertension),Public source (CMS/KFF),131.4514794136255,200.8712179246547,69.41973851102921
+qbp_per_enrollee_year,Public source (CMS/KFF),131.15758986329323,192.1994870323731,61.041897169079874
+rho_boundary_density (CMS 2026 data),"Public data, computed (CMS 2026 Star Ratings)",146.31339564715842,166.38278036381533,20.069384716656913

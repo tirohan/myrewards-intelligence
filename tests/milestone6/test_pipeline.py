@@ -348,7 +348,7 @@ def test_milestone6_config_is_loaded() -> None:
     settings = load_config()
     assert settings.milestone6.diagnostic_seeds == [42, 123, 456, 789, 2026]
     assert settings.milestone6.split_mode == "grouped_stratified"
-    assert settings.milestone6.observation_window_days == 90
+    assert settings.milestone6.observation_window_days == 365
     assert settings.milestone6.shareable_dir == "milestone6_shareables"
     assert settings.milestone6.treatment_grain == "gap_level"
     assert settings.milestone6.track == "R"
@@ -397,3 +397,11 @@ def test_member_broadcast_can_empty_an_open_gap_arm() -> None:
     g_diab = gap.loc[gap["care_gap_code"] == "DIAB_A1C_TEST"]
     assert int(b_diab["t_issued"].sum()) == len(b_diab)
     assert int(g_diab["t_issued"].sum()) == 0
+
+
+def test_targeting_never_treats_without_distinguishable_lift() -> None:
+    df = attach_treatment(_identified_frame())
+    X, _ = prepare_covariates(df, exclude_reward_features=True)
+    fitted = fit_uplift_models(df, X, random_state=42)
+    ranked = build_targeting_table(df, fitted, cate_identified=True, lift_distinguishable=False)
+    assert "Treat" not in set(ranked["recommended_band"])

@@ -135,7 +135,7 @@ def build_performance_report(
         if _is_mock_track_r(results):
             doc.add_paragraph(
                 "T is Bernoulli among gaps still open at reconstructed outreach. "
-                "Y is 90-day post-issue InComm closure, not the raw Closed flag. "
+                "Y is 365-day post-issue InComm closure, not the raw Closed flag. "
                 "Treated and control should both have outcome variation; T must not "
                 "equal Y."
             )
@@ -158,6 +158,42 @@ def build_performance_report(
                 "untreated_empty",
             ],
             results["by_care_gap"],
+        )
+    if results.get("positivity"):
+        doc.add_heading("Positivity by stratum", level=1)
+        doc.add_paragraph(
+            "A stratum with no untreated (or treated) arm cannot support a tau estimate; none is reported for it, "
+            "and the holdout size that would restore identification is listed."
+        )
+        add_table(
+            doc,
+            ["stratum", "n_treated", "n_control", "treated_rate", "control_rate", "status", "holdout_n_per_arm_for_1pp"],
+            results["positivity"],
+        )
+    if results.get("followup_days"):
+        fu = results["followup_days"]
+        doc.add_paragraph(
+            f"Follow-up: window {fu['window_days']} days; median available follow-up {fu['median']:.0f} days; "
+            f"{100 * fu['share_full_window']:.1f}% of rows have the full window (the rest are censored at the data cut)."
+        )
+    for gap, sec in (results.get("secondary_cohorts") or {}).items():
+        if sec.get("status") != "OK":
+            continue
+        doc.add_heading(f"Secondary cohort: {gap} (research-computed labels, not headline)", level=1)
+        doc.add_paragraph(
+            "InComm's rules engine never produced CKD rows (ConditionCode 'CKD' vs 'CHRONIC_KIDNEY_DISEASE'), so "
+            "these labels are research-computed. Reported separately; never mixed into the headline."
+        )
+        add_table(
+            doc,
+            ["metric", "value"],
+            [
+                {"metric": "Rows", "value": sec.get("n_rows")},
+                {"metric": "Treated / control", "value": f"{sec.get('n_treated')} / {sec.get('n_control')}"},
+                {"metric": "Treated closure rate", "value": sec.get("treated_closure_rate")},
+                {"metric": "Control closure rate", "value": sec.get("control_closure_rate")},
+                {"metric": "ATE (SE)", "value": f"{sec.get('ate_mean')} ({sec.get('ate_se')})"},
+            ],
         )
     grain = results.get("grain_contrast") or {}
     if grain.get("member_broadcast"):
@@ -195,12 +231,23 @@ def build_elasticity_report(elasticity: dict[str, Any], results: dict[str, Any] 
     )
     _notice(doc, _m7_notice(results) if results else f"Status: {elasticity.get('status')}")
     doc.add_paragraph(str(elasticity.get("reason", "")))
-    if elasticity.get("by_gap"):
+    if elasticity.get("pooled_slope_pp_per_10usd") is not None:
         add_table(
             doc,
-            ["care_gap_code", "n", "distinct_amounts", "catalog_default"],
-            elasticity["by_gap"],
+            ["metric", "value"],
+            [
+                {"metric": "Pooled slope (pp closure per +$10 offered, within gap)", "value": elasticity["pooled_slope_pp_per_10usd"]},
+                {"metric": "SE (pp per $10)", "value": elasticity["pooled_se_pp_per_10usd"]},
+                {"metric": "Minimum detectable slope (80% power)", "value": elasticity["minimum_detectable_slope_pp_per_10usd"]},
+                {"metric": "Distinguishable from zero", "value": elasticity["distinguishable_from_zero"]},
+                {"metric": "Offers analysed", "value": elasticity["n_offered"]},
+            ],
         )
+    if elasticity.get("by_gap"):
+        cols = ["care_gap_code", "n", "distinct_amounts", "mean_amount", "catalog_default"]
+        if elasticity.get("pooled_slope_pp_per_10usd") is not None:
+            cols += ["slope_pp_per_10usd", "se_pp_per_10usd"]
+        add_table(doc, cols, elasticity["by_gap"])
     return doc
 
 

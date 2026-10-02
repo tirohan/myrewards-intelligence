@@ -1,0 +1,9 @@
+care_gap_code,cms_measure_id,link,eligible_group,rationale
+DIAB_EYE_EXAM,C11,direct,diabetes,Diabetes Care - Eye Exam is the 2026 Part C measure C11 (process; the gap closes the measure numerator)
+DIAB_NEPHRO_SCREEN,C13,direct,diabetes,Kidney Health Evaluation for Patients with Diabetes is the 2026 Part C measure C13 (process)
+DIAB_A1C_TEST,C12,rate,diabetes,An HbA1c test is a precondition for the Blood Sugar Controlled measure C12 (untested members count as not controlled); value passes through at the measure's own control rate
+DIAB_BLOOD_SUGAR,C12,rate,diabetes,Same measure C12 and the same HbA1c claim as DIAB_A1C_TEST; value is split across the two gaps
+HTN_PCP_FOLLOWUP,C14,rate,hypertension,A PCP visit creates the BP reading Controlling Blood Pressure C14 needs; passes through at the measure's control rate (research mapping)
+COPD_SPIROMETRY,,none,,Spirometry (SPR) is not a 2026 Part C Star measure
+BH_POST_DISCHARGE_7D,,none,,Follow-up after hospitalization for mental illness (FUH) is not a 2026 Part C Star measure
+CKD_NEPHROLOGY_VISIT,,none,,No 2026 Part C Star measure for a CKD nephrology visit (secondary cohort)

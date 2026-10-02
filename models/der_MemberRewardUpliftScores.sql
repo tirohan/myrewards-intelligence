@@ -1,5 +1,5 @@
 -- der_MemberRewardUpliftScores DDL Proposal
--- Generated: 2026-09-09T11:38:38.512779+00:00
+-- Generated: 2026-10-01T23:01:40.846631+00:00
 -- THIS IS A PROPOSAL. Do not apply without InComm DBA review.
 -- TreatmentSourceBasis is required so Track S scores cannot be read as Track R.
 
@@ -20,10 +20,16 @@ CREATE TABLE [der_MemberRewardUpliftScores] (
     [ObservationWindowDays] int NOT NULL,
     [TopContributingFeaturesJson] nvarchar(max) NOT NULL,
     CONSTRAINT [PK_der_MemberRewardUpliftScores] PRIMARY KEY ([Id]),
+    CONSTRAINT [CK_der_MemberRewardUpliftScores_TreatmentSourceBasis]
+        CHECK ([TreatmentSourceBasis] IN (N'Research-simulated', N'Research-generated IncentiveRewards mock', N'InComm-issued')),
+    CONSTRAINT [CK_der_MemberRewardUpliftScores_Window] CHECK ([ObservationWindowDays] > 0),
     CONSTRAINT [FK_der_MemberRewardUpliftScores_der_MlPipelineRuns]
         FOREIGN KEY ([MlPipelineRunId]) REFERENCES [der_MlPipelineRuns] ([Id])
 );
 
+-- Runs are versioned by MlPipelineRunId; never overwrite a prior run's scores.
+CREATE UNIQUE INDEX [UX_der_MemberRewardUpliftScores_Run_Member_Gap]
+    ON [der_MemberRewardUpliftScores] ([MlPipelineRunId], [MemberId], [CareGapCode]);
 CREATE INDEX [IX_der_MemberRewardUpliftScores_MemberId]
     ON [der_MemberRewardUpliftScores] ([MemberId]);
 CREATE INDEX [IX_der_MemberRewardUpliftScores_CareGapCode]

@@ -25,7 +25,6 @@ def _classifier(random_state: int = 42) -> Pipeline:
                 LogisticRegression(
                     max_iter=2000,
                     solver="lbfgs",
-                    class_weight="balanced",
                     random_state=random_state,
                 ),
             ),

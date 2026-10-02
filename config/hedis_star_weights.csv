@@ -1,0 +1,8 @@
+CareGapCode,HedisMeasureId,StarsCategory,StarsWeight
+BH_POST_DISCHARGE_7D,FUH-7,Part C — Behavioral Health,3
+COPD_SPIROMETRY,SPR,Part C — Managing Chronic Conditions,1
+DIAB_A1C_TEST,CDC-A1C,Part C — Managing Chronic Conditions,3
+DIAB_BLOOD_SUGAR,CDC-A1C,Part C — Managing Chronic Conditions,3
+DIAB_EYE_EXAM,CDC-EYE,Part C — Managing Chronic Conditions,3
+DIAB_NEPHRO_SCREEN,KED,Part C — Managing Chronic Conditions,3
+HTN_PCP_FOLLOWUP,CBP,Part C — Managing Chronic Conditions,3

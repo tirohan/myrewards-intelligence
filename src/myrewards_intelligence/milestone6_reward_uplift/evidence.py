@@ -21,18 +21,27 @@ class TreatmentSource(StrEnum):
         if self == TreatmentSource.INCOMM_ISSUED:
             return (
                 "Track R: dated issuance/redemption from a named InComm ledger. "
-                "Only this basis may be consumed by Milestone 7."
+                "Milestone 7 may consume this as production-issued lift."
             )
         if self == TreatmentSource.RESEARCH_GENERATED_LEDGER:
             return (
                 "Track R interface on a research-generated IncentiveRewards-shaped "
                 "ledger (real members/gaps/amounts; assignment independent of Closed). "
-                "Not InComm production issuance. Milestone 7 must not consume."
+                "Milestone 7 may consume this only as research-generated input, never as InComm-issued lift."
             )
         return (
             "Track S: treatment derived from sim_MemberRewardSimulations / "
             "HEALTH_ACTION_REWARD assignment. Method and pipeline only."
         )
+
+
+def m7_use(source: TreatmentSource) -> str:
+    """How Milestone 7 may use lift built on this treatment source."""
+    return {
+        TreatmentSource.INCOMM_ISSUED: "production",
+        TreatmentSource.RESEARCH_GENERATED_LEDGER: "research-only",
+        TreatmentSource.RESEARCH_SIMULATED: "never",  # Track S: T = Y, CATE not identified
+    }[source]
 
 
 class TreatmentGrain(StrEnum):
