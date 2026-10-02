@@ -1,0 +1,17 @@
+{
+  "source": "https://www.cms.gov/files/zip/2026-star-ratings-data-tables.zip",
+  "contracts_validated": 524,
+  "part_c_summary_exact_match_after_half_star_rounding": 0.7805343511450382,
+  "part_c_summary_within_half_star": 0.9809160305343512,
+  "mean_published_minus_reconstructed": 0.10926351298257495,
+  "not_modelled": "categorical adjustment index and reward factor (explains the small positive gap)",
+  "ma_contracts_rated": 524,
+  "share_rated_3_5": 0.3244274809160305,
+  "share_rated_4_or_more": 0.44656488549618323,
+  "median_total_rated_weight": 77.0,
+  "dr_grid": [
+    0.02,
+    0.03,
+    0.05
+  ]
+}

@@ -10,8 +10,11 @@ from __future__ import annotations
 import sys
 from datetime import UTC, datetime
 
+import pandas as pd
+
 from ..core.config import load_config, resolve_path, write_json
 from ..core.logging import setup_logging
+from ..core.manifest import write_run_manifest
 from ..milestone6_reward_uplift.ablation import export_ablation_scores, train_ablation_scorer
 from ..milestone6_reward_uplift.covariates import prepare_covariates
 from ..milestone6_reward_uplift.data import (
@@ -32,7 +35,9 @@ from ..milestone6_reward_uplift.plots import (
     save_quadrant_chart,
     save_volume_curve,
 )
+from ..milestone6_reward_uplift.positivity import positivity_table
 from ..milestone6_reward_uplift.reports import write_all_reports
+from ..milestone6_reward_uplift.secondary import run_secondary_cohort
 from ..milestone6_reward_uplift.targeting import (
     build_targeting_table,
     quadrant_counts,
@@ -105,6 +110,18 @@ def main() -> int:
         )
         results["mock_assumptions"] = assumptions
         elasticity = assess_elasticity(treated)
+        results["elasticity"] = elasticity
+        results["positivity"] = positivity_table(treated)
+        fu_days = (
+            pd.to_datetime(treated["as_of_date"]) - pd.to_datetime(treated["potential_issued_at"])
+        ).dt.days if "potential_issued_at" in treated.columns else None
+        if fu_days is not None:
+            results["followup_days"] = {
+                "window_days": window_days,
+                "median": float(fu_days.median()),
+                "share_full_window": float((fu_days >= (window_days or 0)).mean()),
+            }
+        results["secondary_cohorts"] = {"CKD_NEPHROLOGY_VISIT": run_secondary_cohort(raw, cfg)} if track == "R" else {}
         ablation = train_ablation_scorer(X, treated["y"].to_numpy())
         export_ablation_scores(treated, ablation, cfg.ablation_scores_path)
 
@@ -125,7 +142,10 @@ def main() -> int:
             cate_identified=bool(results["cate_identified"]),
             ablation_scores=ablation.scores,
             tau_treat=cfg.uplift_tiers.tau_treat,
-            propensity_high=cfg.uplift_tiers.propensity_high,
+            high_risk_top_share=cfg.uplift_tiers.high_risk_top_share,
+            lift_distinguishable=bool(
+                results.get("ate_se") and abs(results.get("ate_mean", 0.0)) > 1.96 * results["ate_se"]
+            ),
         )
         vol_tau = volume_curve(ranked["uplift_score"].to_numpy(), list(cfg.volume_cutpoints))
         vol_ablation = volume_curve(
@@ -198,6 +218,21 @@ def main() -> int:
             ablation_importance=ablation.global_importance,
         )
         logger.info("Reports: %s", written)
+        write_run_manifest(
+            "milestone6",
+            cfg.model_dump(),
+            [resolve_path(settings.paths.analytical_dataset), resolve_path(cfg.issuance_ledger_path)],
+            [
+                models_dir / f"scored_uplift_{suffix}.csv",
+                models_dir / f"targeting_{suffix}.csv",
+                models_dir / "milestone6_metadata.json",
+                resolve_path("reports/milestone6_results.json"),
+            ],
+            {
+                k: results.get(k)
+                for k in ("n_rows", "n_treated", "cate_identified", "ate_mean", "ate_se", "auuc_mean")
+            },
+        )
         logger.info(
             "MILESTONE 6 COMPLETE (Track %s). CATE identified=%s claim=%s m7_may_consume=%s",
             cfg.track,

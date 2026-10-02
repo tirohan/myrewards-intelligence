@@ -1,0 +1,36 @@
+{
+  "name": "milestone7",
+  "git_sha": "6de19ea",
+  "config": {
+    "scores_path": "models/scored_uplift_track_r.csv",
+    "m6_results_path": "reports/milestone6_results.json",
+    "star_weights_path": "config/hedis_star_weights.csv",
+    "reward_amount_pools_path": "config/reward_amount_pools.csv",
+    "treat_fractions": [
+      0.1,
+      0.25,
+      0.5,
+      1.0
+    ],
+    "value_per_closure_usd": null,
+    "redeem_sensitivity": [
+      0.55,
+      0.75
+    ]
+  },
+  "inputs": {
+    "/Volumes/research/mhealth/InComm/Milestones/InComm_Milestone2/myrewards-intelligence/models/scored_uplift_track_r.csv": "6e0484b0307f1dbbf89e6e9e98d2bc480f6c178492701d8f1ecff744389540f1",
+    "/Volumes/research/mhealth/InComm/Milestones/InComm_Milestone2/myrewards-intelligence/reports/milestone6_results.json": "fd00fc3628b8b1e57490de08f613d09f1acd5b7dd5be7291e15c9285939b1cb4"
+  },
+  "metrics": {
+    "rows": 11669,
+    "cate_identified_share": 1.0,
+    "all_rows_mock_tagged": true,
+    "ate_mean": 0.011437807450042827,
+    "ate_se": 0.018726561798153702,
+    "minimum_detectable_effect": 0.05243437303483036,
+    "lift_status": "LIFT_NOT_DISTINGUISHABLE_FROM_ZERO",
+    "cpt_hcpcs_matching_status": "NOT AVAILABLE \u2014 VALUE NOT YET PROVIDED",
+    "attribution_to_reward_status": "NOT AVAILABLE \u2014 VALUE NOT YET PROVIDED"
+  }
+}

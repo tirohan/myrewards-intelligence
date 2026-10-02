@@ -74,7 +74,11 @@ def _format_cell(value: Any) -> str:
     if isinstance(value, bool):
         return "Yes" if value else "No"
     if isinstance(value, float):
-        if abs(value) < 0.001 or abs(value) >= 1000:
+        if value != value:  # NaN: a value that is not available, never the string "nan"
+            return "n/a"
+        if abs(value) >= 1000:
+            return f"{value:,.0f}"
+        if abs(value) < 0.001:
             return f"{value:.4g}"
         return f"{value:.4f}"
     if value is None:

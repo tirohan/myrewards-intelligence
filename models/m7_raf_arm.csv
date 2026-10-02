@@ -1,0 +1,8 @@
+care_gap_code,ra_eligible_encounter,encounter_basis,payment_hcc_dx_share,dominant_condition,v28_factor_verified,raf_value_usd_low,raf_value_usd_base,raf_value_usd_high,raf_value_upper_bound_usd,status
+BH_POST_DISCHARGE_7D,True,psychotherapy visit (CPT 90832/90834/90837),0.0,none,,0.0,0.0,0.0,,ZERO: diagnosis is not a payment HCC
+COPD_SPIROMETRY,False,diagnostic test (CPT 94010/94014/94060),1.0,COPD,,0.0,0.0,0.0,,ZERO: not a risk-adjustment-eligible encounter
+DIAB_A1C_TEST,False,laboratory test (CPT 83036/83037),1.0,diabetes,0.166,0.0,0.0,0.0,,ZERO: not a risk-adjustment-eligible encounter
+DIAB_BLOOD_SUGAR,False,laboratory test (CPT 82947/82950/82951/83036),1.0,diabetes,0.166,0.0,0.0,0.0,,ZERO: not a risk-adjustment-eligible encounter
+DIAB_EYE_EXAM,False,retinal imaging (CPT 92250/92227/92228),1.0,diabetes,0.166,0.0,0.0,0.0,,ZERO: not a risk-adjustment-eligible encounter
+DIAB_NEPHRO_SCREEN,False,laboratory test (CPT 82043/82570/82565),1.0,diabetes,0.166,0.0,0.0,0.0,,ZERO: not a risk-adjustment-eligible encounter
+HTN_PCP_FOLLOWUP,True,office E/M visit (CPT 99213-99215),1.0,heart failure,,,,,4811.04,NOT_AVAILABLE: V28 factor not verified (upper bound shown)

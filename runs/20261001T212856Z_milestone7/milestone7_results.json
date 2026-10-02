@@ -1,0 +1,69 @@
+{
+  "validation": {
+    "rows": 11669,
+    "cate_identified_share": 1.0,
+    "all_rows_mock_tagged": true,
+    "ate_mean": -0.002443010567201147,
+    "ate_se": 0.005772000955457479,
+    "minimum_detectable_effect": 0.01616160267528094,
+    "lift_status": "LIFT_NOT_DISTINGUISHABLE_FROM_ZERO",
+    "cpt_hcpcs_matching_status": "NOT AVAILABLE \u2014 VALUE NOT YET PROVIDED",
+    "attribution_to_reward_status": "NOT AVAILABLE \u2014 VALUE NOT YET PROVIDED"
+  },
+  "scenarios": [
+    {
+      "fraction_treated": 0.1,
+      "n_treated": 1167,
+      "incremental_closures": 11.00780686801699,
+      "reward_cost_issued_usd": 25465.0,
+      "reward_cost_expected_usd": 14005.750000000002,
+      "pricing_status": "LIFT_NOT_DISTINGUISHABLE_FROM_ZERO",
+      "breakeven_value_per_closure_usd": NaN,
+      "roi": NaN,
+      "value_basis": "NOT AVAILABLE \u2014 VALUE NOT YET PROVIDED",
+      "financial_slots_status": "NOT AVAILABLE \u2014 VALUE NOT YET PROVIDED",
+      "TreatmentSourceBasis": "Research-generated IncentiveRewards mock"
+    },
+    {
+      "fraction_treated": 0.25,
+      "n_treated": 2917,
+      "incremental_closures": 18.22570033080435,
+      "reward_cost_issued_usd": 63130.0,
+      "reward_cost_expected_usd": 34721.5,
+      "pricing_status": "LIFT_NOT_DISTINGUISHABLE_FROM_ZERO",
+      "breakeven_value_per_closure_usd": NaN,
+      "roi": NaN,
+      "value_basis": "NOT AVAILABLE \u2014 VALUE NOT YET PROVIDED",
+      "financial_slots_status": "NOT AVAILABLE \u2014 VALUE NOT YET PROVIDED",
+      "TreatmentSourceBasis": "Research-generated IncentiveRewards mock"
+    },
+    {
+      "fraction_treated": 0.5,
+      "n_treated": 5834,
+      "incremental_closures": 19.88697590017504,
+      "reward_cost_issued_usd": 125560.0,
+      "reward_cost_expected_usd": 69058.0,
+      "pricing_status": "LIFT_NOT_DISTINGUISHABLE_FROM_ZERO",
+      "breakeven_value_per_closure_usd": NaN,
+      "roi": NaN,
+      "value_basis": "NOT AVAILABLE \u2014 VALUE NOT YET PROVIDED",
+      "financial_slots_status": "NOT AVAILABLE \u2014 VALUE NOT YET PROVIDED",
+      "TreatmentSourceBasis": "Research-generated IncentiveRewards mock"
+    },
+    {
+      "fraction_treated": 1.0,
+      "n_treated": 11669,
+      "incremental_closures": -17.435138795858624,
+      "reward_cost_issued_usd": 241715.0,
+      "reward_cost_expected_usd": 132943.25,
+      "pricing_status": "LIFT_NOT_DISTINGUISHABLE_FROM_ZERO",
+      "breakeven_value_per_closure_usd": NaN,
+      "roi": NaN,
+      "value_basis": "NOT AVAILABLE \u2014 VALUE NOT YET PROVIDED",
+      "financial_slots_status": "NOT AVAILABLE \u2014 VALUE NOT YET PROVIDED",
+      "TreatmentSourceBasis": "Research-generated IncentiveRewards mock"
+    }
+  ],
+  "value_assumption": "NOT_AVAILABLE",
+  "m7_input_basis": "Research-generated IncentiveRewards mock; not InComm-issued"
+}

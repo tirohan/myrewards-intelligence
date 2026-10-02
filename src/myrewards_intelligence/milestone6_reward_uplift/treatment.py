@@ -118,6 +118,16 @@ def attach_treatment(
         out["t_redeemed"] = (pd.Series(claimed, index=out.index).fillna(0) > 0).astype(int)
         out["treatment_grain"] = TreatmentGrain.MEMBER_BROADCAST.value
     out["issued_amount"] = out["care_gap_code"].map(CATALOG_DEFAULT_AMOUNTS)
+    if events is not None and "amount" in events.columns and len(events):
+        # gap-level offered amount (NaN for controls); falls back to the catalog default otherwise
+        amt = (
+            events.groupby(["member_id", "care_gap_code"], as_index=False)["amount"]
+            .mean()
+            .rename(columns={"amount": "_event_amount"})
+        )
+        out = out.merge(amt, on=["member_id", "care_gap_code"], how="left")
+        out["issued_amount"] = out["_event_amount"].where(out["t_issued"].eq(1), out["issued_amount"])
+        out = out.drop(columns="_event_amount")
     out["treatment_source_basis"] = treatment_source.value
     out["assignment_mechanism"] = _mechanism_for(treatment_source)
 

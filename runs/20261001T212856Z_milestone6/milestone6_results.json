@@ -1,0 +1,346 @@
+{
+  "seeds": [
+    42,
+    123,
+    456,
+    789,
+    2026
+  ],
+  "split_mode": "grouped_stratified",
+  "n_rows": 11669,
+  "n_members": 6668,
+  "n_treated": 5217,
+  "n_control": 6452,
+  "treated_closure_rate": 0.02185163887291547,
+  "control_closure_rate": 0.022473651580905144,
+  "ess": 11526.42778708591,
+  "ess_ratio": 0.9877819682137209,
+  "cate_identified": true,
+  "identification_reasons": [],
+  "treatment_source_basis": "Research-generated IncentiveRewards mock",
+  "treatment_grain": "gap-level",
+  "headline_claim": "CATE",
+  "by_care_gap": [
+    {
+      "care_gap_code": "BH_POST_DISCHARGE_7D",
+      "n": 1667,
+      "n_treated": 729,
+      "n_control": 938,
+      "treated_closure": 0.00411522633744856,
+      "control_closure": 0.0042643923240938165,
+      "descriptive_contrast": -0.00014916598664525653,
+      "untreated_empty": false,
+      "control_no_variation": false
+    },
+    {
+      "care_gap_code": "COPD_SPIROMETRY",
+      "n": 1667,
+      "n_treated": 762,
+      "n_control": 905,
+      "treated_closure": 0.0,
+      "control_closure": 0.0011049723756906078,
+      "descriptive_contrast": -0.0011049723756906078,
+      "untreated_empty": false,
+      "control_no_variation": false
+    },
+    {
+      "care_gap_code": "DIAB_A1C_TEST",
+      "n": 1667,
+      "n_treated": 752,
+      "n_control": 915,
+      "treated_closure": 0.0,
+      "control_closure": 0.001092896174863388,
+      "descriptive_contrast": -0.001092896174863388,
+      "untreated_empty": false,
+      "control_no_variation": false
+    },
+    {
+      "care_gap_code": "DIAB_BLOOD_SUGAR",
+      "n": 1667,
+      "n_treated": 735,
+      "n_control": 932,
+      "treated_closure": 0.0013605442176870747,
+      "control_closure": 0.001072961373390558,
+      "descriptive_contrast": 0.0002875828442965168,
+      "untreated_empty": false,
+      "control_no_variation": false
+    },
+    {
+      "care_gap_code": "DIAB_EYE_EXAM",
+      "n": 1667,
+      "n_treated": 754,
+      "n_control": 913,
+      "treated_closure": 0.001326259946949602,
+      "control_closure": 0.001095290251916758,
+      "descriptive_contrast": 0.00023096969503284413,
+      "untreated_empty": false,
+      "control_no_variation": false
+    },
+    {
+      "care_gap_code": "DIAB_NEPHRO_SCREEN",
+      "n": 1667,
+      "n_treated": 726,
+      "n_control": 941,
+      "treated_closure": 0.0,
+      "control_closure": 0.0010626992561105207,
+      "descriptive_contrast": -0.0010626992561105207,
+      "untreated_empty": false,
+      "control_no_variation": false
+    },
+    {
+      "care_gap_code": "HTN_PCP_FOLLOWUP",
+      "n": 1667,
+      "n_treated": 759,
+      "n_control": 908,
+      "treated_closure": 0.14361001317523056,
+      "control_closure": 0.14977973568281938,
+      "descriptive_contrast": -0.006169722507588821,
+      "untreated_empty": false,
+      "control_no_variation": false
+    }
+  ],
+  "grain_contrast": {
+    "member_broadcast": [
+      {
+        "care_gap_code": "BH_POST_DISCHARGE_7D",
+        "n": 1667,
+        "n_treated": 1248,
+        "n_control": 419,
+        "treated_closure": 1.0,
+        "control_closure": 0.0,
+        "descriptive_contrast": 1.0,
+        "untreated_empty": false,
+        "control_no_variation": true
+      },
+      {
+        "care_gap_code": "COPD_SPIROMETRY",
+        "n": 1667,
+        "n_treated": 1011,
+        "n_control": 656,
+        "treated_closure": 1.0,
+        "control_closure": 0.0,
+        "descriptive_contrast": 1.0,
+        "untreated_empty": false,
+        "control_no_variation": true
+      },
+      {
+        "care_gap_code": "DIAB_A1C_TEST",
+        "n": 1667,
+        "n_treated": 1667,
+        "n_control": 0,
+        "treated_closure": 0.19796040791841632,
+        "control_closure": null,
+        "descriptive_contrast": null,
+        "untreated_empty": true,
+        "control_no_variation": true
+      },
+      {
+        "care_gap_code": "DIAB_BLOOD_SUGAR",
+        "n": 1667,
+        "n_treated": 1667,
+        "n_control": 0,
+        "treated_closure": 0.31853629274145173,
+        "control_closure": null,
+        "descriptive_contrast": null,
+        "untreated_empty": true,
+        "control_no_variation": true
+      },
+      {
+        "care_gap_code": "DIAB_EYE_EXAM",
+        "n": 1667,
+        "n_treated": 1667,
+        "n_control": 0,
+        "treated_closure": 0.29154169166166766,
+        "control_closure": null,
+        "descriptive_contrast": null,
+        "untreated_empty": true,
+        "control_no_variation": true
+      },
+      {
+        "care_gap_code": "DIAB_NEPHRO_SCREEN",
+        "n": 1667,
+        "n_treated": 1667,
+        "n_control": 0,
+        "treated_closure": 0.29874025194961007,
+        "control_closure": null,
+        "descriptive_contrast": null,
+        "untreated_empty": true,
+        "control_no_variation": true
+      },
+      {
+        "care_gap_code": "HTN_PCP_FOLLOWUP",
+        "n": 1667,
+        "n_treated": 622,
+        "n_control": 1045,
+        "treated_closure": 1.0,
+        "control_closure": 0.0,
+        "descriptive_contrast": 1.0,
+        "untreated_empty": false,
+        "control_no_variation": true
+      }
+    ],
+    "gap_level_assignment": [
+      {
+        "care_gap_code": "BH_POST_DISCHARGE_7D",
+        "n": 1667,
+        "n_treated": 1248,
+        "n_control": 419,
+        "treated_closure": 1.0,
+        "control_closure": 0.0,
+        "descriptive_contrast": 1.0,
+        "untreated_empty": false,
+        "control_no_variation": true
+      },
+      {
+        "care_gap_code": "COPD_SPIROMETRY",
+        "n": 1667,
+        "n_treated": 1011,
+        "n_control": 656,
+        "treated_closure": 1.0,
+        "control_closure": 0.0,
+        "descriptive_contrast": 1.0,
+        "untreated_empty": false,
+        "control_no_variation": true
+      },
+      {
+        "care_gap_code": "DIAB_A1C_TEST",
+        "n": 1667,
+        "n_treated": 330,
+        "n_control": 1337,
+        "treated_closure": 1.0,
+        "control_closure": 0.0,
+        "descriptive_contrast": 1.0,
+        "untreated_empty": false,
+        "control_no_variation": true
+      },
+      {
+        "care_gap_code": "DIAB_BLOOD_SUGAR",
+        "n": 1667,
+        "n_treated": 531,
+        "n_control": 1136,
+        "treated_closure": 1.0,
+        "control_closure": 0.0,
+        "descriptive_contrast": 1.0,
+        "untreated_empty": false,
+        "control_no_variation": true
+      },
+      {
+        "care_gap_code": "DIAB_EYE_EXAM",
+        "n": 1667,
+        "n_treated": 486,
+        "n_control": 1181,
+        "treated_closure": 1.0,
+        "control_closure": 0.0,
+        "descriptive_contrast": 1.0,
+        "untreated_empty": false,
+        "control_no_variation": true
+      },
+      {
+        "care_gap_code": "DIAB_NEPHRO_SCREEN",
+        "n": 1667,
+        "n_treated": 498,
+        "n_control": 1169,
+        "treated_closure": 1.0,
+        "control_closure": 0.0,
+        "descriptive_contrast": 1.0,
+        "untreated_empty": false,
+        "control_no_variation": true
+      },
+      {
+        "care_gap_code": "HTN_PCP_FOLLOWUP",
+        "n": 1667,
+        "n_treated": 622,
+        "n_control": 1045,
+        "treated_closure": 1.0,
+        "control_closure": 0.0,
+        "descriptive_contrast": 1.0,
+        "untreated_empty": false,
+        "control_no_variation": true
+      }
+    ],
+    "notes": [
+      "IncentiveRewards 3rd-party feed is not implemented (InComm 2026-07-20 Q4). Track R uses a research-generated IncentiveRewards-shaped ledger on real members/gaps/amounts. It is not InComm-issued; Milestone 7 may use it only as labeled research input.",
+      "Live QA: IsRewardEligible iff Status='Closed' (0 violations). HAR cases / sim rows are generated for those closed gaps (CaseSubtype = care_gap_code). Gap-level Track S T equals Y on catalog gaps.",
+      "Member-broadcast T (M4 lifetime sim count) copies any reward onto every gap for that member. Diabetes untreated-empty is that artifact, not a missing arm.",
+      "ISS-008: clinical claims ServiceFrom <= 2026-06-23; HAR CreatedAtUtc >= 2026-06-25. Case time is after every claim on this extract \u2014 reverse causation is structural for HAR. The Track R mock reconstructs outreach lag from gap tenure.",
+      "Track R mock assignment is Bernoulli among gaps still open at t0. Historical closure was not caused by mock T; identified CATE here is a pipeline/negative-control result, not partner-facing lift."
+    ],
+    "incentive_rewards_feed": "NOT_IMPLEMENTED",
+    "structural_reverse_causation": true
+  },
+  "per_seed": [
+    {
+      "seed": 42,
+      "n_train": 9334,
+      "n_test": 2335,
+      "ate": -0.001833153521901886,
+      "ate_se": 0.005775554656876954,
+      "auuc": -0.0008938954938019362,
+      "placebo_auuc": 0.00046200476626101657,
+      "train_feature_count": 16
+    },
+    {
+      "seed": 123,
+      "n_train": 9334,
+      "n_test": 2335,
+      "ate": 0.001135686053624553,
+      "ate_se": 0.005744456560711043,
+      "auuc": 0.0010546392167641338,
+      "placebo_auuc": 0.00034075597871037965,
+      "train_feature_count": 16
+    },
+    {
+      "seed": 456,
+      "n_train": 9334,
+      "n_test": 2335,
+      "ate": -0.0028823999211607942,
+      "ate_se": 0.0060833450851970295,
+      "auuc": 0.00030613657607745363,
+      "placebo_auuc": -0.0008394116107785573,
+      "train_feature_count": 16
+    },
+    {
+      "seed": 789,
+      "n_train": 9334,
+      "n_test": 2335,
+      "ate": -0.004607060161177796,
+      "ate_se": 0.005441831872250717,
+      "auuc": 0.0004566657494746742,
+      "placebo_auuc": 0.0003761694347201813,
+      "train_feature_count": 16
+    },
+    {
+      "seed": 2026,
+      "n_train": 9334,
+      "n_test": 2335,
+      "ate": -0.0040281252853898095,
+      "ate_se": 0.005814816602251652,
+      "auuc": -0.003787765220618941,
+      "placebo_auuc": -0.00045407676289974683,
+      "train_feature_count": 16
+    }
+  ],
+  "ate_mean": -0.002443010567201147,
+  "ate_se": 0.005772000955457479,
+  "auuc_mean": -0.0005728438344209232,
+  "placebo_auuc_mean": -2.291163879734532e-05,
+  "track": "R",
+  "m7_may_consume": false,
+  "observation_window_applied": true,
+  "mock_assumptions": {
+    "treat_probability": 0.45,
+    "issue_lag_days_min": 7,
+    "issue_lag_days_max": 45,
+    "redeem_probability": 0.55,
+    "mean_days_to_claim": 14.0,
+    "assignment": "Bernoulli among gaps still open at t0; independent of later Closed",
+    "amounts": "InComm catalog DefaultRewardAmount by care gap",
+    "program_name": "MyRewards Health Action Incentive",
+    "n_events": 5217,
+    "n_eligible_rows": 11669,
+    "n_ineligible_already_closed": 0,
+    "n_ineligible_after_as_of": 0,
+    "n_closed_without_claim_date": 195,
+    "seed": 42
+  }
+}

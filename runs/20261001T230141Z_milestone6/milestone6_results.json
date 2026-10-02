@@ -1,0 +1,602 @@
+{
+  "seeds": [
+    42,
+    123,
+    456,
+    789,
+    2026
+  ],
+  "split_mode": "grouped_stratified",
+  "n_rows": 11669,
+  "n_members": 6668,
+  "n_treated": 5217,
+  "n_control": 6452,
+  "treated_closure_rate": 0.39332949971247844,
+  "control_closure_rate": 0.38422194668319903,
+  "ess": 11526.42778708591,
+  "ess_ratio": 0.9877819682137209,
+  "cate_identified": true,
+  "identification_reasons": [],
+  "treatment_source_basis": "Research-generated IncentiveRewards mock",
+  "treatment_grain": "gap-level",
+  "headline_claim": "CATE",
+  "by_care_gap": [
+    {
+      "care_gap_code": "BH_POST_DISCHARGE_7D",
+      "n": 1667,
+      "n_treated": 729,
+      "n_control": 938,
+      "treated_closure": 0.7530864197530864,
+      "control_closure": 0.7452025586353944,
+      "descriptive_contrast": 0.007883861117692015,
+      "untreated_empty": false,
+      "control_no_variation": false
+    },
+    {
+      "care_gap_code": "COPD_SPIROMETRY",
+      "n": 1667,
+      "n_treated": 762,
+      "n_control": 905,
+      "treated_closure": 0.6220472440944882,
+      "control_closure": 0.5933701657458563,
+      "descriptive_contrast": 0.028677078348631868,
+      "untreated_empty": false,
+      "control_no_variation": false
+    },
+    {
+      "care_gap_code": "DIAB_A1C_TEST",
+      "n": 1667,
+      "n_treated": 752,
+      "n_control": 915,
+      "treated_closure": 0.20212765957446807,
+      "control_closure": 0.19453551912568307,
+      "descriptive_contrast": 0.007592140448785006,
+      "untreated_empty": false,
+      "control_no_variation": false
+    },
+    {
+      "care_gap_code": "DIAB_BLOOD_SUGAR",
+      "n": 1667,
+      "n_treated": 735,
+      "n_control": 932,
+      "treated_closure": 0.3333333333333333,
+      "control_closure": 0.30686695278969955,
+      "descriptive_contrast": 0.02646638054363376,
+      "untreated_empty": false,
+      "control_no_variation": false
+    },
+    {
+      "care_gap_code": "DIAB_EYE_EXAM",
+      "n": 1667,
+      "n_treated": 754,
+      "n_control": 913,
+      "treated_closure": 0.28116710875331563,
+      "control_closure": 0.30010952902519167,
+      "descriptive_contrast": -0.018942420271876037,
+      "untreated_empty": false,
+      "control_no_variation": false
+    },
+    {
+      "care_gap_code": "DIAB_NEPHRO_SCREEN",
+      "n": 1667,
+      "n_treated": 726,
+      "n_control": 941,
+      "treated_closure": 0.3154269972451791,
+      "control_closure": 0.2858660998937301,
+      "descriptive_contrast": 0.02956089735144901,
+      "untreated_empty": false,
+      "control_no_variation": false
+    },
+    {
+      "care_gap_code": "HTN_PCP_FOLLOWUP",
+      "n": 1667,
+      "n_treated": 759,
+      "n_control": 908,
+      "treated_closure": 0.2516469038208169,
+      "control_closure": 0.2599118942731278,
+      "descriptive_contrast": -0.008264990452310883,
+      "untreated_empty": false,
+      "control_no_variation": false
+    }
+  ],
+  "grain_contrast": {
+    "member_broadcast": [
+      {
+        "care_gap_code": "BH_POST_DISCHARGE_7D",
+        "n": 1667,
+        "n_treated": 1248,
+        "n_control": 419,
+        "treated_closure": 1.0,
+        "control_closure": 0.0,
+        "descriptive_contrast": 1.0,
+        "untreated_empty": false,
+        "control_no_variation": true
+      },
+      {
+        "care_gap_code": "COPD_SPIROMETRY",
+        "n": 1667,
+        "n_treated": 1011,
+        "n_control": 656,
+        "treated_closure": 1.0,
+        "control_closure": 0.0,
+        "descriptive_contrast": 1.0,
+        "untreated_empty": false,
+        "control_no_variation": true
+      },
+      {
+        "care_gap_code": "DIAB_A1C_TEST",
+        "n": 1667,
+        "n_treated": 1667,
+        "n_control": 0,
+        "treated_closure": 0.19796040791841632,
+        "control_closure": null,
+        "descriptive_contrast": null,
+        "untreated_empty": true,
+        "control_no_variation": true
+      },
+      {
+        "care_gap_code": "DIAB_BLOOD_SUGAR",
+        "n": 1667,
+        "n_treated": 1667,
+        "n_control": 0,
+        "treated_closure": 0.31853629274145173,
+        "control_closure": null,
+        "descriptive_contrast": null,
+        "untreated_empty": true,
+        "control_no_variation": true
+      },
+      {
+        "care_gap_code": "DIAB_EYE_EXAM",
+        "n": 1667,
+        "n_treated": 1667,
+        "n_control": 0,
+        "treated_closure": 0.29154169166166766,
+        "control_closure": null,
+        "descriptive_contrast": null,
+        "untreated_empty": true,
+        "control_no_variation": true
+      },
+      {
+        "care_gap_code": "DIAB_NEPHRO_SCREEN",
+        "n": 1667,
+        "n_treated": 1667,
+        "n_control": 0,
+        "treated_closure": 0.29874025194961007,
+        "control_closure": null,
+        "descriptive_contrast": null,
+        "untreated_empty": true,
+        "control_no_variation": true
+      },
+      {
+        "care_gap_code": "HTN_PCP_FOLLOWUP",
+        "n": 1667,
+        "n_treated": 622,
+        "n_control": 1045,
+        "treated_closure": 1.0,
+        "control_closure": 0.0,
+        "descriptive_contrast": 1.0,
+        "untreated_empty": false,
+        "control_no_variation": true
+      }
+    ],
+    "gap_level_assignment": [
+      {
+        "care_gap_code": "BH_POST_DISCHARGE_7D",
+        "n": 1667,
+        "n_treated": 1248,
+        "n_control": 419,
+        "treated_closure": 1.0,
+        "control_closure": 0.0,
+        "descriptive_contrast": 1.0,
+        "untreated_empty": false,
+        "control_no_variation": true
+      },
+      {
+        "care_gap_code": "COPD_SPIROMETRY",
+        "n": 1667,
+        "n_treated": 1011,
+        "n_control": 656,
+        "treated_closure": 1.0,
+        "control_closure": 0.0,
+        "descriptive_contrast": 1.0,
+        "untreated_empty": false,
+        "control_no_variation": true
+      },
+      {
+        "care_gap_code": "DIAB_A1C_TEST",
+        "n": 1667,
+        "n_treated": 330,
+        "n_control": 1337,
+        "treated_closure": 1.0,
+        "control_closure": 0.0,
+        "descriptive_contrast": 1.0,
+        "untreated_empty": false,
+        "control_no_variation": true
+      },
+      {
+        "care_gap_code": "DIAB_BLOOD_SUGAR",
+        "n": 1667,
+        "n_treated": 531,
+        "n_control": 1136,
+        "treated_closure": 1.0,
+        "control_closure": 0.0,
+        "descriptive_contrast": 1.0,
+        "untreated_empty": false,
+        "control_no_variation": true
+      },
+      {
+        "care_gap_code": "DIAB_EYE_EXAM",
+        "n": 1667,
+        "n_treated": 486,
+        "n_control": 1181,
+        "treated_closure": 1.0,
+        "control_closure": 0.0,
+        "descriptive_contrast": 1.0,
+        "untreated_empty": false,
+        "control_no_variation": true
+      },
+      {
+        "care_gap_code": "DIAB_NEPHRO_SCREEN",
+        "n": 1667,
+        "n_treated": 498,
+        "n_control": 1169,
+        "treated_closure": 1.0,
+        "control_closure": 0.0,
+        "descriptive_contrast": 1.0,
+        "untreated_empty": false,
+        "control_no_variation": true
+      },
+      {
+        "care_gap_code": "HTN_PCP_FOLLOWUP",
+        "n": 1667,
+        "n_treated": 622,
+        "n_control": 1045,
+        "treated_closure": 1.0,
+        "control_closure": 0.0,
+        "descriptive_contrast": 1.0,
+        "untreated_empty": false,
+        "control_no_variation": true
+      }
+    ],
+    "notes": [
+      "IncentiveRewards 3rd-party feed is not implemented (InComm 2026-07-20 Q4). Track R uses a research-generated IncentiveRewards-shaped ledger on real members/gaps/amounts. It is not InComm-issued; Milestone 7 may use it only as labeled research input.",
+      "Live QA: IsRewardEligible iff Status='Closed' (0 violations). HAR cases / sim rows are generated for those closed gaps (CaseSubtype = care_gap_code). Gap-level Track S T equals Y on catalog gaps.",
+      "Member-broadcast T (M4 lifetime sim count) copies any reward onto every gap for that member. Diabetes untreated-empty is that artifact, not a missing arm.",
+      "ISS-008: clinical claims ServiceFrom <= 2026-06-23; HAR CreatedAtUtc >= 2026-06-25. Case time is after every claim on this extract \u2014 reverse causation is structural for HAR. The Track R mock reconstructs outreach lag from gap tenure.",
+      "Track R mock assignment is Bernoulli among gaps still open at t0. Historical closure was not caused by mock T; identified CATE here is a pipeline/negative-control result, not partner-facing lift."
+    ],
+    "incentive_rewards_feed": "NOT_IMPLEMENTED",
+    "structural_reverse_causation": true
+  },
+  "per_seed": [
+    {
+      "seed": 42,
+      "n_train": 9334,
+      "n_test": 2335,
+      "ate": -0.01861450624772651,
+      "ate_se": 0.018716609844663345,
+      "auuc": -0.0020686959693254226,
+      "placebo_auuc": 8.530681981468047e-05,
+      "train_feature_count": 16
+    },
+    {
+      "seed": 123,
+      "n_train": 9334,
+      "n_test": 2335,
+      "ate": 0.01690314185572382,
+      "ate_se": 0.018988107288026856,
+      "auuc": 0.013328709634570871,
+      "placebo_auuc": 0.0013006209419791556,
+      "train_feature_count": 16
+    },
+    {
+      "seed": 456,
+      "n_train": 9334,
+      "n_test": 2335,
+      "ate": 0.008838889059230786,
+      "ate_se": 0.01868646163339622,
+      "auuc": 0.010145528188011392,
+      "placebo_auuc": -0.0018192203793191918,
+      "train_feature_count": 16
+    },
+    {
+      "seed": 789,
+      "n_train": 9334,
+      "n_test": 2335,
+      "ate": 0.030287010258458022,
+      "ate_se": 0.018513760244959904,
+      "auuc": 0.015148765348067727,
+      "placebo_auuc": -0.0007712027704509407,
+      "train_feature_count": 16
+    },
+    {
+      "seed": 2026,
+      "n_train": 9334,
+      "n_test": 2335,
+      "ate": 0.01977450232452801,
+      "ate_se": 0.018727869979722176,
+      "auuc": 0.01747404971614753,
+      "placebo_auuc": 0.0028166976112645034,
+      "train_feature_count": 16
+    }
+  ],
+  "ate_mean": 0.011437807450042827,
+  "ate_se": 0.018726561798153702,
+  "auuc_mean": 0.01080567138349442,
+  "placebo_auuc_mean": 0.0003224404446576414,
+  "track": "R",
+  "m7_may_consume": false,
+  "observation_window_applied": true,
+  "mock_assumptions": {
+    "treat_probability": 0.45,
+    "issue_lag_days_min": 7,
+    "issue_lag_days_max": 45,
+    "redeem_probability": 0.988,
+    "mean_days_to_claim": 14.0,
+    "assignment": "Bernoulli among gaps still open at t0; independent of later Closed",
+    "amounts": "Empirical per-gap pool from InComm wallet incentive configuration (catalog default if no pool)",
+    "program_name": "MyRewards Health Action Incentive",
+    "n_events": 5217,
+    "n_eligible_rows": 11669,
+    "n_ineligible_already_closed": 0,
+    "n_ineligible_after_as_of": 0,
+    "n_closed_without_claim_date": 195,
+    "seed": 42
+  },
+  "elasticity": {
+    "status": "ESTIMATED",
+    "within_gap_amount_varies": true,
+    "reason": "Offered amount varies within gap (empirical InComm amount pool). Estimate is on the research mock, where amount is independent of outcome: it demonstrates the method and its power, not InComm's response curve.",
+    "pooled_slope_pp_per_10usd": 0.23857071885678355,
+    "pooled_se_pp_per_10usd": 0.4564585746009473,
+    "minimum_detectable_slope_pp_per_10usd": 1.2780840088826524,
+    "distinguishable_from_zero": false,
+    "n_offered": 5217,
+    "by_gap": [
+      {
+        "care_gap_code": "BH_POST_DISCHARGE_7D",
+        "n": 729,
+        "distinct_amounts": 6,
+        "mean_amount": 22.181069958847736,
+        "catalog_default": 30.0,
+        "slope_pp_per_10usd": -1.92495611342194,
+        "se_pp_per_10usd": 1.7294308374028347
+      },
+      {
+        "care_gap_code": "COPD_SPIROMETRY",
+        "n": 762,
+        "distinct_amounts": 2,
+        "mean_amount": 18.33989501312336,
+        "catalog_default": 20.0,
+        "slope_pp_per_10usd": 1.6307259836771775,
+        "se_pp_per_10usd": 7.479725607342485
+      },
+      {
+        "care_gap_code": "DIAB_A1C_TEST",
+        "n": 752,
+        "distinct_amounts": 9,
+        "mean_amount": 23.647606382978722,
+        "catalog_default": 20.0,
+        "slope_pp_per_10usd": 0.9204401520861919,
+        "se_pp_per_10usd": 0.9553231105553679
+      },
+      {
+        "care_gap_code": "DIAB_BLOOD_SUGAR",
+        "n": 735,
+        "distinct_amounts": 9,
+        "mean_amount": 23.546938775510203,
+        "catalog_default": 15.0,
+        "slope_pp_per_10usd": 0.7713754183167679,
+        "se_pp_per_10usd": 1.1946689197144913
+      },
+      {
+        "care_gap_code": "DIAB_EYE_EXAM",
+        "n": 754,
+        "distinct_amounts": 10,
+        "mean_amount": 22.428381962864723,
+        "catalog_default": 25.0,
+        "slope_pp_per_10usd": 0.11069108975606666,
+        "se_pp_per_10usd": 1.0755255392170031
+      },
+      {
+        "care_gap_code": "DIAB_NEPHRO_SCREEN",
+        "n": 726,
+        "distinct_amounts": 8,
+        "mean_amount": 28.90495867768595,
+        "catalog_default": 20.0,
+        "slope_pp_per_10usd": 0.9138875818454225,
+        "se_pp_per_10usd": 0.8487458196308775
+      },
+      {
+        "care_gap_code": "HTN_PCP_FOLLOWUP",
+        "n": 759,
+        "distinct_amounts": 10,
+        "mean_amount": 22.496706192358367,
+        "catalog_default": 15.0,
+        "slope_pp_per_10usd": -2.775628135231472,
+        "se_pp_per_10usd": 1.4123205870904199
+      }
+    ]
+  },
+  "positivity": [
+    {
+      "stratum": "family:BH",
+      "n": 1667,
+      "n_treated": 729,
+      "n_control": 938,
+      "treated_rate": 0.7530864197530864,
+      "control_rate": 0.7452025586353944,
+      "status": "OK",
+      "tau_reported": true
+    },
+    {
+      "stratum": "family:COPD",
+      "n": 1667,
+      "n_treated": 762,
+      "n_control": 905,
+      "treated_rate": 0.6220472440944882,
+      "control_rate": 0.5933701657458563,
+      "status": "OK",
+      "tau_reported": true
+    },
+    {
+      "stratum": "family:DIAB",
+      "n": 6668,
+      "n_treated": 2967,
+      "n_control": 3701,
+      "treated_rate": 0.2824401752612066,
+      "control_rate": 0.2720886246960281,
+      "status": "OK",
+      "tau_reported": true
+    },
+    {
+      "stratum": "family:HTN",
+      "n": 1667,
+      "n_treated": 759,
+      "n_control": 908,
+      "treated_rate": 0.2516469038208169,
+      "control_rate": 0.2599118942731278,
+      "status": "OK",
+      "tau_reported": true
+    },
+    {
+      "stratum": "gap:BH_POST_DISCHARGE_7D",
+      "n": 1667,
+      "n_treated": 729,
+      "n_control": 938,
+      "treated_rate": 0.7530864197530864,
+      "control_rate": 0.7452025586353944,
+      "status": "OK",
+      "tau_reported": true
+    },
+    {
+      "stratum": "gap:COPD_SPIROMETRY",
+      "n": 1667,
+      "n_treated": 762,
+      "n_control": 905,
+      "treated_rate": 0.6220472440944882,
+      "control_rate": 0.5933701657458563,
+      "status": "OK",
+      "tau_reported": true
+    },
+    {
+      "stratum": "gap:DIAB_A1C_TEST",
+      "n": 1667,
+      "n_treated": 752,
+      "n_control": 915,
+      "treated_rate": 0.20212765957446807,
+      "control_rate": 0.19453551912568307,
+      "status": "OK",
+      "tau_reported": true
+    },
+    {
+      "stratum": "gap:DIAB_BLOOD_SUGAR",
+      "n": 1667,
+      "n_treated": 735,
+      "n_control": 932,
+      "treated_rate": 0.3333333333333333,
+      "control_rate": 0.30686695278969955,
+      "status": "OK",
+      "tau_reported": true
+    },
+    {
+      "stratum": "gap:DIAB_EYE_EXAM",
+      "n": 1667,
+      "n_treated": 754,
+      "n_control": 913,
+      "treated_rate": 0.28116710875331563,
+      "control_rate": 0.30010952902519167,
+      "status": "OK",
+      "tau_reported": true
+    },
+    {
+      "stratum": "gap:DIAB_NEPHRO_SCREEN",
+      "n": 1667,
+      "n_treated": 726,
+      "n_control": 941,
+      "treated_rate": 0.3154269972451791,
+      "control_rate": 0.2858660998937301,
+      "status": "OK",
+      "tau_reported": true
+    },
+    {
+      "stratum": "gap:HTN_PCP_FOLLOWUP",
+      "n": 1667,
+      "n_treated": 759,
+      "n_control": 908,
+      "treated_rate": 0.2516469038208169,
+      "control_rate": 0.2599118942731278,
+      "status": "OK",
+      "tau_reported": true
+    }
+  ],
+  "followup_days": {
+    "window_days": 365,
+    "median": 387.0,
+    "share_full_window": 0.8571428571428571
+  },
+  "secondary_cohorts": {
+    "CKD_NEPHROLOGY_VISIT": {
+      "headline": false,
+      "label_source": "Research-computed (domain analysis)",
+      "care_gaps": [
+        "CKD_NEPHROLOGY_VISIT"
+      ],
+      "n_rows": 1650,
+      "status": "OK",
+      "n_members": 1650,
+      "n_treated": 754,
+      "n_control": 896,
+      "treated_closure_rate": 0.3156498673740053,
+      "control_closure_rate": 0.3515625,
+      "cate_identified": true,
+      "ate_mean": -0.056948897346454065,
+      "ate_se": 0.05312725224263574,
+      "auuc_mean": -0.03367903165529575,
+      "positivity": [
+        {
+          "stratum": "family:CKD",
+          "n": 1650,
+          "n_treated": 754,
+          "n_control": 896,
+          "treated_rate": 0.3156498673740053,
+          "control_rate": 0.3515625,
+          "status": "OK",
+          "tau_reported": true
+        },
+        {
+          "stratum": "gap:CKD_NEPHROLOGY_VISIT",
+          "n": 1650,
+          "n_treated": 754,
+          "n_control": 896,
+          "treated_rate": 0.3156498673740053,
+          "control_rate": 0.3515625,
+          "status": "OK",
+          "tau_reported": true
+        }
+      ],
+      "elasticity": {
+        "status": "ESTIMATED",
+        "within_gap_amount_varies": true,
+        "reason": "Offered amount varies within gap (empirical InComm amount pool). Estimate is on the research mock, where amount is independent of outcome: it demonstrates the method and its power, not InComm's response curve.",
+        "pooled_slope_pp_per_10usd": 1.0849665714440169,
+        "pooled_se_pp_per_10usd": 0.9176927389419255,
+        "minimum_detectable_slope_pp_per_10usd": 2.569539669037391,
+        "distinguishable_from_zero": false,
+        "n_offered": 754,
+        "by_gap": [
+          {
+            "care_gap_code": "CKD_NEPHROLOGY_VISIT",
+            "n": 754,
+            "distinct_amounts": 8,
+            "mean_amount": 27.181697612732094,
+            "catalog_default": 18.0,
+            "slope_pp_per_10usd": 1.0849665714440169,
+            "se_pp_per_10usd": 0.9176927389419255
+          }
+        ]
+      },
+      "treatment_source_basis": "Research-generated IncentiveRewards mock"
+    }
+  }
+}

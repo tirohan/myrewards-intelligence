@@ -34,10 +34,16 @@ CREATE TABLE [der_MemberRewardUpliftScores] (
     [ObservationWindowDays] int NOT NULL,
     [TopContributingFeaturesJson] nvarchar(max) NOT NULL,
     CONSTRAINT [PK_der_MemberRewardUpliftScores] PRIMARY KEY ([Id]),
+    CONSTRAINT [CK_der_MemberRewardUpliftScores_TreatmentSourceBasis]
+        CHECK ([TreatmentSourceBasis] IN ({basis_values})),
+    CONSTRAINT [CK_der_MemberRewardUpliftScores_Window] CHECK ([ObservationWindowDays] > 0),
     CONSTRAINT [FK_der_MemberRewardUpliftScores_der_MlPipelineRuns]
         FOREIGN KEY ([MlPipelineRunId]) REFERENCES [der_MlPipelineRuns] ([Id])
 );
 
+-- Runs are versioned by MlPipelineRunId; never overwrite a prior run's scores.
+CREATE UNIQUE INDEX [UX_der_MemberRewardUpliftScores_Run_Member_Gap]
+    ON [der_MemberRewardUpliftScores] ([MlPipelineRunId], [MemberId], [CareGapCode]);
 CREATE INDEX [IX_der_MemberRewardUpliftScores_MemberId]
     ON [der_MemberRewardUpliftScores] ([MemberId]);
 CREATE INDEX [IX_der_MemberRewardUpliftScores_CareGapCode]
@@ -59,7 +65,8 @@ def _tier(score: float) -> str:
 
 def generate_ddl_proposal() -> str:
     """Return the proposed SQL Server DDL."""
-    return DDL_TEMPLATE.format(generated_date=datetime.now(UTC).isoformat())
+    basis_values = ", ".join(f"N'{t.value}'" for t in TreatmentSource)
+    return DDL_TEMPLATE.format(generated_date=datetime.now(UTC).isoformat(), basis_values=basis_values)
 
 
 def generate_scored_output(

@@ -67,7 +67,7 @@ class UpliftTiers(BaseModel):
     """Uplift targeting cut-points."""
 
     tau_treat: float = 0.05
-    propensity_high: float = 0.5
+    high_risk_top_share: float = 0.10
     high: float = 0.10
     medium: float = 0.03
 
@@ -79,23 +79,44 @@ class Milestone6Config(BaseModel):
     test_size: float = 0.2
     random_state: int = 42
     diagnostic_seeds: list[int] = Field(default_factory=lambda: [42, 123, 456, 789, 2026])
-    observation_window_days: int = 90
+    observation_window_days: int = 365
     split_mode: str = "grouped_stratified"
     shareable_dir: str = "milestone6_shareables"
     ablation_scores_path: str = "models/scored_model_a_ablation.csv"
+    reward_amount_pools_path: str = "config/reward_amount_pools.csv"
     issuance_ledger_path: str = "models/incentive_rewards_mock.csv"
     treatment_grain: str = "gap_level"
     generate_incentive_rewards_mock: bool = True
     mock_treat_probability: float = 0.45
     mock_issue_lag_days_min: int = 7
     mock_issue_lag_days_max: int = 45
-    mock_redeem_probability: float = 0.55
+    mock_redeem_probability: float = 0.988
     min_arm_n: int = 50
     min_ess_ratio: float = 0.25
     volume_cutpoints: list[float] = Field(
         default_factory=lambda: [0.0, 0.03, 0.05, 0.08, 0.10, 0.15]
     )
     uplift_tiers: UpliftTiers = Field(default_factory=UpliftTiers)
+
+
+class Milestone7Config(BaseModel):
+    """Milestone 7 ROI framework configuration."""
+
+    scores_path: str = "models/scored_uplift_track_r.csv"
+    m6_results_path: str = "reports/milestone6_results.json"
+    star_weights_path: str = "config/hedis_star_weights.csv"  # InComm metadata, kept for the discrepancy table
+    star_density_path: str = "config/cms_star_boundary_density.csv"
+    cms_weights_path: str = "config/cms_2026_measure_weights.csv"
+    gap_measure_path: str = "config/care_gap_cms_measure.csv"
+    reward_amount_pools_path: str = "config/reward_amount_pools.csv"
+    claims_validation_path: str = "models/claims_validation.csv"
+    claims_dx_path: str = "models/closing_claim_diagnoses.csv"
+    attribution_timing_path: str = "models/attribution_timing.json"
+    mock_eligibility_path: str = "models/incentive_rewards_mock_eligibility.csv"
+    treat_fractions: list[float] = Field(default_factory=lambda: [0.1, 0.25, 0.5, 1.0])
+    # None => ROI is NOT_AVAILABLE; a value is a disclosed research assumption.
+    value_per_closure_usd: float | None = None
+    redeem_sensitivity: list[float] = Field(default_factory=lambda: [0.55, 0.75])
 
 
 class LoggingConfig(BaseModel):
@@ -123,6 +144,7 @@ class Settings(BaseSettings):
     )
     milestone5: Milestone5Config = Field(default_factory=Milestone5Config)
     milestone6: Milestone6Config = Field(default_factory=Milestone6Config)
+    milestone7: Milestone7Config = Field(default_factory=Milestone7Config)
     logging: LoggingConfig = Field(default_factory=LoggingConfig)
 
 
@@ -143,6 +165,7 @@ def load_config(config_path: str | Path = "config/config.yaml") -> Settings:
     mode = raw.get("mode", {})
     m5 = raw.get("milestone5", {})
     m6 = raw.get("milestone6", {})
+    m7 = raw.get("milestone7", {})
     logging_cfg = raw.get("logging", {})
 
     return Settings(
@@ -153,6 +176,7 @@ def load_config(config_path: str | Path = "config/config.yaml") -> Settings:
         layer_prefixes=raw.get("layer_prefixes", {}),
         milestone5=Milestone5Config(**m5) if m5 else Milestone5Config(),
         milestone6=Milestone6Config(**m6) if m6 else Milestone6Config(),
+        milestone7=Milestone7Config(**m7) if m7 else Milestone7Config(),
         logging=LoggingConfig(**logging_cfg) if logging_cfg else LoggingConfig(),
     )
 

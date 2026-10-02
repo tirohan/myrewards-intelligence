@@ -1,0 +1,27 @@
+{
+  "completed": "2026-09-09T11:38:38.616836+00:00",
+  "track": "R",
+  "overlap_reasons": [],
+  "cate_identified": true,
+  "split_mode": "grouped_stratified",
+  "treatment_grain": "gap_level",
+  "treatment_source_basis": "Research-generated IncentiveRewards mock",
+  "m7_may_consume": false,
+  "observation_window_days": 90,
+  "mock_assumptions": {
+    "treat_probability": 0.45,
+    "issue_lag_days_min": 7,
+    "issue_lag_days_max": 45,
+    "redeem_probability": 0.55,
+    "mean_days_to_claim": 14.0,
+    "assignment": "Bernoulli among gaps still open at t0; independent of later Closed",
+    "amounts": "InComm catalog DefaultRewardAmount by care gap",
+    "program_name": "MyRewards Health Action Incentive",
+    "n_events": 5217,
+    "n_eligible_rows": 11669,
+    "n_ineligible_already_closed": 0,
+    "n_ineligible_after_as_of": 0,
+    "n_closed_without_claim_date": 195,
+    "seed": 42
+  }
+}

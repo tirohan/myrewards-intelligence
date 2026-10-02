@@ -1,0 +1,30 @@
+{
+  "name": "milestone7",
+  "git_sha": "6de19ea",
+  "config": {
+    "scores_path": "models/scored_uplift_track_r.csv",
+    "m6_results_path": "reports/milestone6_results.json",
+    "treat_fractions": [
+      0.1,
+      0.25,
+      0.5,
+      1.0
+    ],
+    "value_per_closure_usd": null
+  },
+  "inputs": {
+    "/Volumes/research/mhealth/InComm/Milestones/InComm_Milestone2/myrewards-intelligence/models/scored_uplift_track_r.csv": "81a94ad82f0584bf7e397a92104efa5bf41fbbcf390b93dfc17a9f32647e21cf",
+    "/Volumes/research/mhealth/InComm/Milestones/InComm_Milestone2/myrewards-intelligence/reports/milestone6_results.json": "dd0c7b6569d015a6ee5dee6599f33f38db0e0583ed2ba00a645a8ef24cf6dd03"
+  },
+  "metrics": {
+    "rows": 11669,
+    "cate_identified_share": 1.0,
+    "all_rows_mock_tagged": true,
+    "ate_mean": -0.002443010567201147,
+    "ate_se": 0.005772000955457479,
+    "minimum_detectable_effect": 0.01616160267528094,
+    "lift_status": "LIFT_NOT_DISTINGUISHABLE_FROM_ZERO",
+    "cpt_hcpcs_matching_status": "NOT AVAILABLE \u2014 VALUE NOT YET PROVIDED",
+    "attribution_to_reward_status": "NOT AVAILABLE \u2014 VALUE NOT YET PROVIDED"
+  }
+}

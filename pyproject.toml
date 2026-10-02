@@ -51,6 +51,7 @@ dev = [
 [project.scripts]
 myrewards-m5 = "myrewards_intelligence.cli.run_milestone5:main"
 myrewards-m6 = "myrewards_intelligence.cli.run_milestone6:main"
+myrewards-m7 = "myrewards_intelligence.cli.run_milestone7:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/myrewards_intelligence"]

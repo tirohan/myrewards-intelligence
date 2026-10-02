@@ -5,7 +5,7 @@ Daniel/InComm (2026-07-20 Q4) directed the team to mock issuance when the
 amounts. Assignment is independent of Closed — unlike HEALTH_ACTION_REWARD.
 
 TreatmentSourceBasis stays Research-generated IncentiveRewards mock.
-Milestone 7 must not consume these scores as InComm-issued lift.
+Milestone 7 may use these scores only as labeled research input, never as InComm-issued lift.
 """
 
 from __future__ import annotations
@@ -18,6 +18,7 @@ import numpy as np
 import pandas as pd
 
 from ..core.config import Milestone6Config, resolve_path
+from .amounts import draw_amounts, load_amount_pools
 from .data import EVENT_COLUMNS
 from .domain_resolutions import CATALOG_DEFAULT_AMOUNTS, EXCLUDE_CARE_GAPS
 from .evidence import TreatmentSource
@@ -30,7 +31,7 @@ logger = logging.getLogger("myrewards_intelligence")
 DEFAULT_TREAT_P = 0.45
 DEFAULT_LAG_MIN = 7
 DEFAULT_LAG_MAX = 45
-DEFAULT_REDEEM_P = 0.55
+DEFAULT_REDEEM_P = 0.988  # activation-rate proxy, outputs/csv/mock_calibration_activation.csv
 DEFAULT_MEAN_DAYS_TO_CLAIM = 14.0
 PROGRAM_NAME = "MyRewards Health Action Incentive"
 REWARD_TYPE = "CARE_GAP_COMPLETION"
@@ -66,6 +67,7 @@ def generate_incentive_rewards_mock(
     cfg: Milestone6Config | None = None,
     *,
     random_state: int | None = None,
+    include_gaps: tuple[str, ...] | None = None,
 ) -> MockIncentiveRewards:
     """Build a capacity-constrained, time-ordered mock ledger on real rows.
 
@@ -81,7 +83,8 @@ def generate_incentive_rewards_mock(
     redeem_p = float(getattr(cfg, "mock_redeem_probability", DEFAULT_REDEEM_P))
     rng = np.random.default_rng(seed)
 
-    catalog = set(CATALOG_DEFAULT_AMOUNTS) - set(EXCLUDE_CARE_GAPS)
+    # headline excludes EXCLUDE_CARE_GAPS; the secondary cohort passes its own gaps explicitly
+    catalog = set(include_gaps) if include_gaps else set(CATALOG_DEFAULT_AMOUNTS) - set(EXCLUDE_CARE_GAPS)
     work = df[df["care_gap_code"].isin(catalog)].copy().reset_index(drop=True)
     empty_events = pd.DataFrame(columns=EVENT_COLUMNS)
     empty_elig = pd.DataFrame(
@@ -118,7 +121,12 @@ def generate_incentive_rewards_mock(
             "member_id": treated["member_id"].to_numpy(),
             "care_gap_code": treated["care_gap_code"].to_numpy(),
             "issued_at": t0.loc[assigned].to_numpy(),
-            "amount": treated["care_gap_code"].map(CATALOG_DEFAULT_AMOUNTS).to_numpy(),
+            # separate RNG: amounts never perturb assignment or outcomes (independent dose)
+            "amount": draw_amounts(
+                treated["care_gap_code"],
+                load_amount_pools(getattr(cfg, "reward_amount_pools_path", "config/reward_amount_pools.csv")),
+                np.random.default_rng(seed + 1),
+            ),
             "redeemed": redeemed[assigned],
             "source": TreatmentSource.RESEARCH_GENERATED_LEDGER.value,
         }
@@ -130,7 +138,7 @@ def generate_incentive_rewards_mock(
         "redeem_probability": redeem_p,
         "mean_days_to_claim": DEFAULT_MEAN_DAYS_TO_CLAIM,
         "assignment": "Bernoulli among gaps still open at t0; independent of later Closed",
-        "amounts": "InComm catalog DefaultRewardAmount by care gap",
+        "amounts": "Empirical per-gap pool from InComm wallet incentive configuration (catalog default if no pool)",
         "program_name": PROGRAM_NAME,
         "n_events": int(len(events)),
         "n_eligible_rows": int(eligible.sum()),

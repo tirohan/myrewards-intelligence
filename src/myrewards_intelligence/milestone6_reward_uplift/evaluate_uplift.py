@@ -88,7 +88,7 @@ def care_gap_descriptives(df: pd.DataFrame) -> list[dict[str, Any]]:
 ASSIGNMENT_AUTOPSY_NOTES = [
     "IncentiveRewards 3rd-party feed is not implemented (InComm 2026-07-20 Q4). "
     "Track R uses a research-generated IncentiveRewards-shaped ledger on real "
-    "members/gaps/amounts. It is not InComm-issued and must not feed Milestone 7.",
+    "members/gaps/amounts. It is not InComm-issued; Milestone 7 may use it only as labeled research input.",
     "Live QA: IsRewardEligible iff Status='Closed' (0 violations). HAR cases / sim "
     "rows are generated for those closed gaps (CaseSubtype = care_gap_code). "
     "Gap-level Track S T equals Y on catalog gaps.",
@@ -126,6 +126,12 @@ def grouped_split(
 ) -> tuple[np.ndarray, np.ndarray]:
     """Grouped member split; stratified by care_gap_code when requested."""
     groups = df["member_id"].to_numpy()
+    if split_mode == "time_aware" and "potential_issued_at" in df.columns:
+        # train on members whose earliest outreach is oldest, test on the newest (exposes drift)
+        first = pd.to_datetime(df.groupby("member_id")["potential_issued_at"].transform("min"))
+        is_test = (first > first.quantile(1 - test_size)).to_numpy()
+        if is_test.any() and (~is_test).any():
+            return np.flatnonzero(~is_test), np.flatnonzero(is_test)
     if split_mode == "grouped_stratified" and "care_gap_code" in df.columns:
         n_splits = max(2, int(round(1 / test_size)))
         y = df["care_gap_code"].astype(str).to_numpy()
@@ -209,6 +215,7 @@ def evaluate_uplift_multi_seed(
                 "n_train": int(len(train)),
                 "n_test": int(len(test)),
                 "ate": ate["ate"],
+                "ate_se": ate["se"],
                 "auuc": auuc,
                 "placebo_auuc": placebo,
                 "train_feature_count": len(fitted.feature_names),
@@ -216,6 +223,8 @@ def evaluate_uplift_multi_seed(
         )
     if result["per_seed"]:
         result["ate_mean"] = float(np.mean([row["ate"] for row in result["per_seed"]]))
+        # seeds share data, so the mean per-seed SE is the honest (conservative) uncertainty
+        result["ate_se"] = float(np.mean([row["ate_se"] for row in result["per_seed"]]))
         result["auuc_mean"] = float(np.mean([row["auuc"] for row in result["per_seed"]]))
         result["placebo_auuc_mean"] = float(
             np.mean([row["placebo_auuc"] for row in result["per_seed"]])
