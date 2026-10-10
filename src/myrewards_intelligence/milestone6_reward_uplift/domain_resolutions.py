@@ -64,7 +64,7 @@ PARAMETER_PROVENANCE: list[dict[str, str]] = [
      "evidence": "InComm cases share one creation timestamp, so no lag is observable. Swept."},
     {"parameter": "Redeem / activation probability", "value": "0.988",
      "source": "InComm-derived proxy",
-     "evidence": "der_OtcActivationStatuses: 98.8% of members activate; lower values swept in M7."},
+     "evidence": "der_OtcActivationStatuses: 98.8% of members activate. Activation is not reward redemption, so 0.988 is used only as the cost ceiling; M7 reports 0.55 / 0.75 / 0.988 as a range."},
 ]
 
 DOMAIN_RESOLUTIONS: dict[str, dict[str, str]] = {

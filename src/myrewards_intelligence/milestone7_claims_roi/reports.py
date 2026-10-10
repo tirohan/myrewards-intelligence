@@ -29,6 +29,9 @@ def write_roi_report(
     star_rows: list[dict] | None = None,
     discrepancies: pd.DataFrame | None = None,
     avoided: pd.DataFrame | None = None,
+    fault_injection: pd.DataFrame | None = None,
+    share_sweep: pd.DataFrame | None = None,
+    position_table: pd.DataFrame | None = None,
 ) -> Path:
     doc = new_doc("Milestone 7: Claims-Validated ROI Framework", "Stars/QBP valuation range on research-generated lift")
     doc.add_paragraph(WATERMARK).runs[0].bold = True
@@ -58,6 +61,12 @@ def write_roi_report(
     )
 
     doc.add_heading("3. Redemption sensitivity", level=1)
+    doc.add_paragraph(
+        "Redemption is not measured. 0.988 is an OTC-benefit activation rate, not a reward redemption rate, so it is used "
+        "only as the cost ceiling (every earned reward is paid). 0.75 and 0.55 are equally unsourced sensitivities. "
+        "Cost, and so the break-even lift, scales with this rate: read the headline as the range below, not a point. "
+        "A low redemption rate probably also means a smaller lift, because an unredeemed reward motivates less."
+    )
     add_table(
         doc,
         ["redeem_p", "fraction_treated", "reward_cost_expected_usd", "required_lift_pp_for_breakeven_base"],
@@ -90,7 +99,7 @@ def write_roi_report(
         )
     claims = validation.get("claims_validation", {})
     if claims.get("status") == "MEASURED":
-        doc.add_heading("6. Claims validation of closures", level=1)
+        doc.add_heading("6. Closure referential-integrity check (not an independent validation)", level=1)
         doc.add_paragraph(claims["basis"] + ". " + claims["shared_claim_note"])
         add_table(
             doc,
@@ -98,6 +107,13 @@ def write_roi_report(
              "in_window", "gaps_sharing_a_claim"],
             claims["by_gap"],
         )
+        if fault_injection is not None:
+            doc.add_paragraph(
+                "Does the check work? Known faults were injected into clean synthetic closures and the checker run on them "
+                "(recall = share flagged; the last row is the false-positive rate on untouched rows). This tests the "
+                "check, not InComm's data."
+            )
+            add_table(doc, ["fault", "injected", "detected", "recall"], fault_injection.to_dict("records"))
     if attribution is not None:
         rt = attribution["real_data_timing"]
         doc.add_heading("7. Reward attribution", level=1)
@@ -166,6 +182,25 @@ def write_roi_report(
              "net_per_offer_with_avoided_usd", "break_even_rr", "break_even_rr_with_avoided"],
             a.to_dict("records"),
         )
+    if share_sweep is not None and len(share_sweep):
+        doc.add_heading("9c. Plan-supplied eligible share (what the plan's own mix does to the value)", level=1)
+        doc.add_paragraph(
+            "Eligible share is the share of a plan's enrollees in a measure's denominator. The public anchors (diabetes 26%) "
+            "may understate an SNP-heavy plan. Set plan_eligible_share in config to your own share. A larger share dilutes "
+            "each closure, so value falls and the break-even lift rises by the scale shown (multiply the base break-even)."
+        )
+        add_table(doc, ["group", "eligible_share", "mean_usd_per_closure", "break_even_scale"], share_sweep.to_dict("records"))
+    if position_table is not None and len(position_table):
+        doc.add_heading("9d. Value by contract star position (the decision a plan faces)", level=1)
+        doc.add_paragraph(
+            "USD per closure at base inputs, conditional on where a contract sits. Only a 3.5-star contract can be lifted "
+            "over the 4-star QBP boundary here, so value is concentrated: contracts rated 3.0 or less, 4.0 or more, or 3.5 "
+            "with the measure far from its next cut point get $0 from this route. Not modelled: a 4.0-star contract near "
+            "its lower edge protecting its bonus (downside), which would add value for that position. The raw rating inside "
+            "a half-star band is not published, so it is assumed uniform. The all_contracts row is the portfolio average "
+            "used in the headline."
+        )
+        add_table(doc, list(position_table.columns), position_table.to_dict("records"))
     doc.add_heading("10. Assumptions and their provenance", level=1)
     add_table(
         doc,

@@ -27,11 +27,12 @@ logger = logging.getLogger("myrewards_intelligence")
 
 # Real-world defaults (disclosed research assumptions, not InComm telemetry):
 # outreach lag after gap identification; capacity so not everyone is issued;
-# redemption in the range reported for health-incentive programs.
+# redemption = the cost CEILING (every earned reward is paid). It is an OTC-benefit activation rate, NOT a measured
+# reward redemption rate, so M7 reports a 0.55 to 0.988 range (0.55 and 0.75 are equally unsourced sensitivities).
 DEFAULT_TREAT_P = 0.45
 DEFAULT_LAG_MIN = 7
 DEFAULT_LAG_MAX = 45
-DEFAULT_REDEEM_P = 0.988  # activation-rate proxy, outputs/csv/mock_calibration_activation.csv
+DEFAULT_REDEEM_P = 0.988  # OTC activation rate used as a cost ceiling, not a redemption estimate
 DEFAULT_MEAN_DAYS_TO_CLAIM = 14.0
 PROGRAM_NAME = "MyRewards Health Action Incentive"
 REWARD_TYPE = "CARE_GAP_COMPLETION"

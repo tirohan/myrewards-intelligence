@@ -55,7 +55,22 @@ def star_value_model() -> None:
     ])
     doc.add_heading("4. Which assumption matters most", level=1)
     add_table(doc, ["assumption", "provenance", "value_at_low_input", "value_at_high_input", "swing_usd"], tor.to_dict("records"))
-    doc.add_heading("5. InComm metadata versus CMS 2026", level=1)
+    sweep, pos = _csv("m7_share_sweep"), _csv("m7_value_by_position")
+    doc.add_heading("5. A plan's own eligible share", level=1)
+    doc.add_paragraph(
+        "The model accepts a plan-supplied share (plan_eligible_share in the configuration, for example diabetes 0.40 for an "
+        "SNP-heavy plan). A larger share dilutes each closure, so value falls and the break-even lift rises by the scale shown. "
+        "Mean over the treated gap mix, base QBP and boundary density."
+    )
+    add_table(doc, ["group", "eligible_share", "mean_usd_per_closure", "break_even_scale"], sweep.to_dict("records"))
+    doc.add_heading("6. Value by contract star position", level=1)
+    add_bullets(doc, [
+        "The headline averages over all 524 rated contracts. A plan faces its own position, and the value is concentrated: only a contract rated 3.5 stars can be lifted over the 4-star QBP boundary through a measure.",
+        "Contracts rated 3.0 or less, 4.0 or more, or 3.5 with the measure far from its next cut point get $0 from this route. A 3.5-star contract with the measure near a cut point gets about six times the average.",
+        "Not modelled: a 4.0-star contract near its lower edge protecting its bonus (downside). It would add value for that position. The raw rating inside a half-star band is not published, so it is assumed uniform.",
+    ])
+    add_table(doc, list(pos.columns), pos.to_dict("records"))
+    doc.add_heading("7. InComm metadata versus CMS 2026", level=1)
     doc.add_paragraph(
         "InComm's StarsWeight differs from CMS's 2026 weight for eye exam and kidney screening, and COPD spirometry and "
         "BH follow-up feed no 2026 Part C measure. The model uses CMS's weights."
@@ -103,9 +118,14 @@ def attribution_raf() -> None:
     raf = _csv("m7_raf_arm")
     rt = att["real_data_timing"]
     doc = _doc("Milestone 7: Claims Validation, Attribution and RAF", "How closures tie to claims, whether a reward can be credited, and the separate risk-adjustment arm")
-    doc.add_heading("1. Claims validation of closures", level=1)
+    doc.add_heading("1. Closure referential-integrity check (not an independent validation)", level=1)
     doc.add_paragraph(claims["basis"] + ". " + claims["shared_claim_note"])
     add_table(doc, ["care_gap_code", "closed_gaps", "claim_found", "same_member", "cpt_in_definition", "date_matches", "in_window", "gaps_sharing_a_claim"], claims["by_gap"])
+    doc.add_paragraph(
+        "Does the check work? Known faults were injected into clean synthetic closures and the checker was run on them "
+        "(recall is the share flagged; the last row is the false-positive rate on untouched rows). This tests the check, not InComm's data."
+    )
+    add_table(doc, ["fault", "injected", "detected", "recall"], _csv("m7_fault_injection").to_dict("records"))
     doc.add_heading("2. Reward attribution", level=1)
     add_bullets(doc, [
         f"Real data: {rt['closures_after_an_offer']} of {rt['closed_gaps']} closures follow a reward case. Claims run {rt['first_claim']} to {rt['last_claim']}; every case is created {rt['first_case']}. Temporal attribution is impossible with this export.",
@@ -133,6 +153,21 @@ def review_response() -> None:
         "Star value of one closure: about $157 at base ($102 to $260), measured on CMS public 2026 data. Break-even lift is about 5.5 percentage points offered to all (3.3 to 8.4).",
         f"Under published incentive-trial effects (CRC-anchored RR 1.17) the program nets ${base['net_total_usd']:,.0f} at base value (ROI {base['roi']:.2f}x). It pays for DIAB_A1C_TEST, DIAB_BLOOD_SUGAR and HTN_PCP_FOLLOWUP and not for the other gaps.",
         "Method: every input comes from the reference tables in the InComm database, public CMS/KFF/HCUP data, or published trials, and is labeled by source.",
+    ])
+    doc.add_heading("2a. InComm feedback on Milestone 7 and our response", level=1)
+    add_table(doc, ["point", "finding", "action"], [
+        {"point": "Eligible-share assumption drives the $157 per closure",
+         "finding": "Correct. The share was a fixed public anchor (diabetes 26%), and a plan with an SNP-heavy mix can differ.",
+         "action": "Plan-supplied share is now an input. At a diabetes share of 40% the mean value is about $114 per closure and the break-even lift is 1.38 times the base (about 7.6pp). Sweep published from 20% to 50%."},
+        {"point": "Value should be conditional on a contract's star position",
+         "finding": "Correct. The headline averages over all 524 contracts, but only 3.5-star contracts can cross the 4-star boundary, and most of those have the measure far from a cut point.",
+         "action": "Value now published by position. A 3.5-star contract with the measure near a cut point is worth about six times the average; other positions get $0 from this route. Downside protection for 4.0-star contracts is not modelled and is stated."},
+        {"point": "Redemption rate 0.988 is a proxy for OTC activation",
+         "finding": "Correct. Activation is not reward redemption, and 0.55 and 0.75 are equally unsourced.",
+         "action": "0.988 is now labeled the cost ceiling. The break-even lift is reported as a range (5.5pp at 0.988, 4.2pp at 0.75, 3.1pp at 0.55). Redemption is an input."},
+        {"point": "Zero claims anomalies is circular on mock data",
+         "finding": "Correct. Closure is derived from the same claim, CPT and date the checks read back, so member, CPT, date and window agree by construction.",
+         "action": "Renamed a referential-integrity check, not a validation. A fault-injection test shows the checker flags known faults (100% of six fault types, 0% false positives)."},
     ])
     doc.add_heading("2. InComm feedback (28 September 2026) and our response", level=1)
     add_table(doc, ["point", "finding", "action"], [
@@ -170,7 +205,8 @@ def review_response() -> None:
     doc.add_heading("5. What remains open and why", level=1)
     add_bullets(doc, [
         "Measured lift: needs randomized offers. Sizing: about 1,500 members per arm detects +5pp pooled (design document).",
-        "Structural limits of the value model: uniform position inside a half-star band, categorical adjustment and reward factor not modelled, single-measure marginal view, eligible-share ranges.",
+        "Structural limits of the value model: uniform position inside a half-star band, categorical adjustment and reward factor not modelled, no downside protection for 4.0-star contracts, single-measure marginal view.",
+        "Independent claims checks need diagnosis and claim-status fields beyond what the closure derivation guarantees; the checker flags a claim reused across members as one that does.",
         "Avoided cost: BH only and observational; no verified link for other gaps. Not added to the headline.",
         "Synthetic data: claim IDs are MOCK-CLM and the IncentiveRewards ledger is research-generated, so clean validation describes the generator, not InComm production quality.",
         "Not confirmed: whether withholding offers from a control group is permitted by program rules.",

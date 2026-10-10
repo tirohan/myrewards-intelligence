@@ -106,6 +106,10 @@ class Milestone7Config(BaseModel):
     m6_results_path: str = "reports/milestone6_results.json"
     star_weights_path: str = "config/hedis_star_weights.csv"  # InComm metadata, kept for the discrepancy table
     star_density_path: str = "config/cms_star_boundary_density.csv"
+    star_position_path: str = "config/cms_star_position_density.csv"
+    # A plan's own share of enrollees in each measure denominator, e.g. {"diabetes": 0.40}. Empty = public anchors.
+    plan_eligible_share: dict[str, float] = Field(default_factory=dict)
+    share_sweep: dict[str, list[float]] = Field(default_factory=lambda: {"diabetes": [0.20, 0.26, 0.32, 0.40, 0.50]})
     cms_weights_path: str = "config/cms_2026_measure_weights.csv"
     gap_measure_path: str = "config/care_gap_cms_measure.csv"
     reward_amount_pools_path: str = "config/reward_amount_pools.csv"
