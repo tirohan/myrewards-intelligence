@@ -49,6 +49,20 @@ WEIGHTS = {
 }
 
 
+def POSITIONS(rating: np.ndarray, near: np.ndarray) -> dict[str, np.ndarray]:  # noqa: N802
+    """Contract positions a plan can place itself in. 'near' = this measure would step up within the rate change."""
+    all_ = np.ones(len(rating), bool)
+    r35 = rating == 3.5
+    return {
+        "all_contracts": all_,
+        "rated_3.0_or_less": rating < 3.5,
+        "rated_3.5": r35,
+        "rated_3.5_measure_near_cut": r35 & near,
+        "rated_3.5_measure_far_from_cut": r35 & ~near,
+        "rated_4.0_or_more": rating >= 4,
+    }
+
+
 def _measure_id(label: str) -> str | None:
     m = re.match(r"\s*([CD]\d\d)\*?:", label)
     return m.group(1) if m else None
@@ -141,16 +155,28 @@ def main() -> None:
         return 1 + sum(1 for t in cuts[mid] if r >= t)
 
     rows = []
+    pos_rows = []
     for mid in TARGET_MEASURES:
         sub = ma[ma[mid + "_rate"].notna()]
         rho = []
+        pos_rho: dict[str, list[float]] = {}
         for dr in DR_GRID:
             p = []
+            near = []
             for r in sub.itertuples(index=False):
                 rate = getattr(r, mid + "_rate")
                 step = star(mid, rate + dr) - star(mid, rate)
                 p.append(min(1.0, WEIGHTS[mid] * step / r.W / 0.5) if (r.rating == 3.5 and step > 0) else 0.0)
+                near.append(step > 0)
             rho.append(float(np.mean(p)) / dr)
+            # value conditional on where the contract sits (the decision a plan faces): mean crossing probability
+            # among contracts in that position, per unit rate. Only 3.5-star contracts can cross into the QBP here.
+            p, near, rating = np.array(p), np.array(near), sub["rating"].to_numpy()
+            for name, mask in POSITIONS(rating, near).items():
+                pos_rho.setdefault(name, []).append((float(p[mask].mean()) / dr if mask.any() else 0.0, int(mask.sum())))
+        for name, vals in pos_rho.items():
+            pos_rows.append({"measure_id": mid, "position": name, "n_contracts": vals[0][1],
+                             "rho_base": float(np.mean([v[0] for v in vals]))})
         rows.append(
             {
                 "measure_id": mid,
@@ -164,6 +190,7 @@ def main() -> None:
         )
     out = ROOT / "config"
     pd.DataFrame(rows).to_csv(out / "cms_star_boundary_density.csv", index=False)
+    pd.DataFrame(pos_rows).to_csv(out / "cms_star_position_density.csv", index=False)
     pd.DataFrame(sorted(WEIGHTS.items()), columns=["measure_id", "weight"]).assign(source=TECH_NOTES_URL).to_csv(
         out / "cms_2026_measure_weights.csv", index=False
     )

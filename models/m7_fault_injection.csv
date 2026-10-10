@@ -1,0 +1,8 @@
+fault,injected,detected,recall
+missing_claim,150,150,1.0
+wrong_member,150,150,1.0
+wrong_cpt,150,150,1.0
+shifted_date,150,150,1.0
+out_of_window,150,150,1.0
+claim_reused_across_members,150,150,1.0
+none (clean rows flagged = false positives),2100,0,0.0

@@ -30,7 +30,7 @@ from ..milestone7_claims_roi.roi import (
     validate_claims,
 )
 from ..milestone7_claims_roi.stars import StarValueModel, weight_discrepancies
-from ..milestone7_claims_roi.validation import validate_closures
+from ..milestone7_claims_roi.validation import fault_injection_test, validate_closures
 
 
 def main() -> int:
@@ -42,7 +42,9 @@ def main() -> int:
     ate, se = load_lift_uncertainty(p(cfg.m6_results_path))
     with open(p(cfg.m6_results_path), encoding="utf-8") as f:
         m6_results = json.load(f)
-    model = StarValueModel.from_files(p(cfg.star_density_path), p(cfg.gap_measure_path))
+    model = StarValueModel.from_files(
+        p(cfg.star_density_path), p(cfg.gap_measure_path), p(cfg.star_position_path), cfg.plan_eligible_share or None
+    )
     discrepancies = weight_discrepancies(p(cfg.star_weights_path), p(cfg.cms_weights_path), model.mapping.reset_index())
     claims = validate_closures(p(cfg.claims_validation_path))
     central = m6.mock_redeem_probability
@@ -59,6 +61,9 @@ def main() -> int:
     priced = v["lift_status"] == "LIFT_DISTINGUISHABLE"
     counts = df["CareGapCode"].value_counts().to_dict()
     torn = tornado(model, counts)
+    share_sweep = pd.concat([model.share_sweep(counts, g, sh) for g, sh in cfg.share_sweep.items()], ignore_index=True)
+    position_table = model.position_table(counts)
+    fault_injection = fault_injection_test()
     mc_df = pd.DataFrame(
         [
             {"fraction_treated": r["fraction_treated"]}
@@ -87,6 +92,7 @@ def main() -> int:
         ("m7_roi_scenarios", all_scen), ("m7_tornado", torn), ("m7_monte_carlo", mc_df), ("m7_raf_arm", raf),
         ("m7_literature_roi_by_gap", lit_gap), ("m7_literature_roi_program", lit_prog),
         ("m7_star_weight_discrepancies", discrepancies),
+        ("m7_share_sweep", share_sweep), ("m7_value_by_position", position_table), ("m7_fault_injection", fault_injection),
     ):
         frame.to_csv(resolve_path(f"models/{name}.csv"), index=False)
     member_roi(df, model, central, priced).to_csv(resolve_path("models/m7_member_roi.csv"), index=False)
@@ -97,6 +103,7 @@ def main() -> int:
             "scenarios": all_scen.to_dict("records"),
             "attribution": attribution,
             "raf_arm": raf.to_dict("records"),
+            "fault_injection": fault_injection.to_dict("records"),
             "literature_program_roi": lit_prog.to_dict("records"),
             "value_assumption": (
                 f"{ASSUMPTION_TAG}: {cfg.value_per_closure_usd}"
@@ -130,8 +137,10 @@ def main() -> int:
         "# Milestone 7 Status\n\n"
         "**Input basis:** Research-generated IncentiveRewards mock (not InComm-issued)\n"
         f"**Measured lift (mock):** {v['lift_status']}; ATE {ate:.4f} (SE {se:.4f}); minimum detectable {v['minimum_detectable_effect']:.4f}\n"
-        f"**Claims validation:** {claims.get('status')}; all checks pass: {claims.get('all_checks_pass')}; "
-        f"{claims.get('gaps_sharing_a_claim')} gap rows share a claim (basis: synthetic MOCK-CLM ids)\n"
+        f"**Closure referential-integrity check (not independent validation; checks agree by construction on MOCK-CLM ids):** "
+        f"{claims.get('status')}; all pass: {claims.get('all_checks_pass')}; {claims.get('gaps_sharing_a_claim')} gap rows share a claim. "
+        f"Checker fault-injection recall: {fault_injection['recall'].iloc[:-1].min():.0%} minimum over {len(fault_injection) - 1} fault types, "
+        f"{fault_injection['recall'].iloc[-1]:.0%} false positives.\n"
         f"**Attribution:** real data {real_t.get('closures_after_an_offer')} of {real_t.get('closed_gaps')} closures follow an "
         f"offer (impossible temporally). Causal: probability of necessity {attribution['pn_lower']:.2f} to "
         f"{attribution['pn_upper']:.2f} on the mock (monotone {attribution['pn_monotone']:.2f}).\n"
@@ -142,6 +151,12 @@ def main() -> int:
         f"**Lift needed per offered member for Stars->QBP value to cover reward cost (offer to all; low / base / high value):** "
         f"{first['required_lift_pp_for_breakeven_low']:.1f} / {first['required_lift_pp_for_breakeven_base']:.1f} / "
         f"{first['required_lift_pp_for_breakeven_high']:.1f} percentage points\n"
+        f"**Break-even lift across the redemption range (0.988 is a cost ceiling from OTC activation, not measured redemption; offer to all, base value):** "
+        + ", ".join(f"{r.redeem_p:.3f}: {r.required_lift_pp_for_breakeven_base:.1f}pp" for r in all_scen[all_scen['fraction_treated'] == 1.0].itertuples())
+        + "\n"
+        f"**Plan eligible share:** {cfg.plan_eligible_share or 'public anchors (diabetes 26%)'}; diabetes share 40% gives "
+        f"${share_sweep[share_sweep['eligible_share'] == 0.40]['mean_usd_per_closure'].iloc[0]:,.0f} per closure (break-even x"
+        f"{share_sweep[share_sweep['eligible_share'] == 0.40]['break_even_scale'].iloc[0]:.2f}).\n"
         f"**Gaps that pay under the CRC-anchored lift at base value:** {pays}. **Do not:** {not_pays}. "
         f"**No Star measure (Stars value is exactly 0):** {no_star}. Stars/QBP only in this line; avoided medical cost is a separate arm (BH only).\n"
         f"**Priced ROI (literature-anchored lift, NOT InComm lift; offer to all; conservative-value corner / base value):** "
@@ -158,7 +173,8 @@ def main() -> int:
     write_roi_report(
         v, all_scen, resolve_path("reports/Milestone 7 ROI Framework.docx"), torn, mc_df,
         attribution=attribution, raf=raf, lit_gap=lit_gap, lit_prog=lit_prog, avoided=avoided,
-        star_rows=model.provenance_rows(), discrepancies=discrepancies,
+        star_rows=model.provenance_rows(), discrepancies=discrepancies, fault_injection=fault_injection,
+        share_sweep=share_sweep, position_table=position_table,
     )
     write_run_manifest(
         "milestone7",

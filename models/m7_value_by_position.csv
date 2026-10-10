@@ -1,0 +1,7 @@
+position,n_contracts,DIAB_EYE_EXAM,DIAB_NEPHRO_SCREEN,DIAB_A1C_TEST,DIAB_BLOOD_SUGAR,HTN_PCP_FOLLOWUP,mean_over_gap_mix
+all_contracts,523,143.9,111.2,303.0,303.0,238.9,157.1
+rated_3.0_or_less,120,0.0,0.0,0.0,0.0,0.0,0.0
+rated_3.5,170,442.8,341.4,932.1,932.1,713.9,480.3
+rated_3.5_measure_near_cut,65,1326.8,1382.6,1801.7,1801.7,1447.0,1108.5
+rated_3.5_measure_far_from_cut,138,0.0,0.0,0.0,0.0,0.0,0.0
+rated_4.0_or_more,233,0.0,0.0,0.0,0.0,0.0,0.0
